@@ -1,0 +1,16 @@
+# eclipse
+.project
+.settings
+.classpath
+
+# tmp
+logs
+*.log
+*.tmp
+*.swp
+
+# target
+target
+
+# finder
+.DS_Store
