@@ -5,11 +5,16 @@ import java.util.Map;
 import org.tju.so.model.schema.Schema;
 import org.tju.so.model.site.Site;
 
+/**
+ * @author Tianyi HE <hty0807@gmail.com>
+ */
 public class Entity {
 
     private Schema schema;
 
     private Site site;
+
+    private String identity;
 
     private Map<String, Object> fieldValues;
 
@@ -41,6 +46,21 @@ public class Entity {
      */
     public void setSite(Site site) {
         this.site = site;
+    }
+
+    /**
+     * @return the identity
+     */
+    public String getIdentity() {
+        return identity;
+    }
+
+    /**
+     * @param identity
+     *            the identity to set
+     */
+    public void setIdentity(String identity) {
+        this.identity = identity;
     }
 
     /**
