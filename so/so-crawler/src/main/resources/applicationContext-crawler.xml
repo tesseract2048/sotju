@@ -9,10 +9,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"
     default-lazy-init="true">
 
-    <context:component-scan base-package="org.tju.so.search" />
+    <import resource="classpath:/applicationContext-core.xml" />
 
-    <bean id="clusterName" class="java.lang.String">
-        <constructor-arg value="${cluster.name}" />
-    </bean>
-
+    <context:component-scan base-package="org.tju.so.crawler" />
 </beans>

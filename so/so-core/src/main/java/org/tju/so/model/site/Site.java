@@ -1,9 +1,12 @@
 package org.tju.so.model.site;
 
+import org.tju.so.model.IdBasedObject;
+import org.tju.so.model.schema.Schema;
+
 /**
  * @author Tianyi HE <hty0807@gmail.com>
  */
-public interface Site {
+public interface Site extends IdBasedObject {
 
     String getId();
 
@@ -11,6 +14,6 @@ public interface Site {
 
     String getHomeUrl();
 
-    float getRankingFactor();
+    float getRankingFactor(Schema schema);
 
 }

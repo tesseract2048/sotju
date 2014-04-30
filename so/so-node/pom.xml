@@ -10,6 +10,11 @@
     <artifactId>so-node</artifactId>
     <packaging>jar</packaging>
     <dependencies>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch-analysis-ik</artifactId>
+            <version>1.2.6</version>
+        </dependency>
     </dependencies>
 
     <build>

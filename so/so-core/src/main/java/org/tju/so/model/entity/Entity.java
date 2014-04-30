@@ -2,21 +2,43 @@ package org.tju.so.model.entity;
 
 import java.util.Map;
 
+import org.tju.so.model.IdBasedObject;
+import org.tju.so.model.ObjectHelper;
 import org.tju.so.model.schema.Schema;
 import org.tju.so.model.site.Site;
 
 /**
  * @author Tianyi HE <hty0807@gmail.com>
  */
-public class Entity {
+public class Entity implements IdBasedObject {
 
     private Schema schema;
 
     private Site site;
 
-    private String identity;
+    private String id;
 
     private Map<String, Object> fieldValues;
+
+    public Entity() {
+
+    }
+
+    public Entity(Schema schema, Site site, String id,
+            Map<String, Object> fieldValues) {
+        this.schema = schema;
+        this.site = site;
+        this.id = id;
+        this.fieldValues = fieldValues;
+    }
+
+    public Entity(String schemaId, String siteId, String id,
+            Map<String, Object> fieldValues) {
+        this.schema = ObjectHelper.getSchema(schemaId);
+        this.site = ObjectHelper.getSite(siteId);
+        this.id = id;
+        this.fieldValues = fieldValues;
+    }
 
     /**
      * @return the schema
@@ -49,18 +71,18 @@ public class Entity {
     }
 
     /**
-     * @return the identity
+     * @return the id
      */
-    public String getIdentity() {
-        return identity;
+    public String getId() {
+        return id;
     }
 
     /**
-     * @param identity
-     *            the identity to set
+     * @param id
+     *            the id to set
      */
-    public void setIdentity(String identity) {
-        this.identity = identity;
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**

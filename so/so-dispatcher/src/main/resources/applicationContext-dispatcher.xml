@@ -9,4 +9,8 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"
     default-lazy-init="true">
 
+    <import resource="classpath:/applicationContext-core.xml" />
+
+    <context:component-scan base-package="org.tju.so.model" />
+    <context:component-scan base-package="org.tju.so.controller" />
 </beans>

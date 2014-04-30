@@ -11,17 +11,21 @@ public class Field {
 
     private boolean isDefault;
 
+    private boolean isAnalysed;
+
     private float boost;
 
     public Field() {
 
     }
 
-    public Field(String name, FieldType type, boolean isDefault) {
-        this(name, type, isDefault, 1.0f);
+    public Field(String name, FieldType type, boolean isDefault,
+            boolean isAnalysed) {
+        this(name, type, isDefault, isAnalysed, 1.0f);
     }
 
-    public Field(String name, FieldType type, boolean isDefault, float boost) {
+    public Field(String name, FieldType type, boolean isDefault,
+            boolean isAnalysed, float boost) {
         this.name = name;
         this.type = type;
         this.isDefault = isDefault;
@@ -71,6 +75,21 @@ public class Field {
      */
     public void setDefault(boolean isDefault) {
         this.isDefault = isDefault;
+    }
+
+    /**
+     * @return the isAnalysed
+     */
+    public boolean isAnalysed() {
+        return isAnalysed;
+    }
+
+    /**
+     * @param isAnalysed
+     *            the isAnalysed to set
+     */
+    public void setAnalysed(boolean isAnalysed) {
+        this.isAnalysed = isAnalysed;
     }
 
     /**

@@ -1,23 +1,24 @@
 package org.tju.so.search.provider;
 
-import java.util.List;
-
 import org.tju.so.model.entity.Entity;
 import org.tju.so.model.schema.Schema;
-import org.tju.so.search.result.Response;
+import org.tju.so.model.site.Site;
+import org.tju.so.search.context.Context;
+import org.tju.so.search.context.Query;
 
 /**
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public interface SearchProvider {
 
-    Response search(String query);
+    Context search(Query query);
 
-    Response search(Schema schema, String query);
+    boolean index(Entity... entities);
 
-    Response search(List<Schema> schemas, String query);
+    boolean delete(Entity entity);
 
-    void index(Entity entity);
+    boolean updateSite(Site site);
 
-    void cancelIndex(Entity entity);
+    boolean updateSchema(Site[] sites, Schema schema);
+
 }

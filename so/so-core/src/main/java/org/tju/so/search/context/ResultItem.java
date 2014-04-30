@@ -1,17 +1,21 @@
-package org.tju.so.search.result;
+package org.tju.so.search.context;
 
 import org.tju.so.model.entity.Entity;
 
 /**
  * @author Tianyi HE <hty0807@gmail.com>
  */
-public class Item {
+public class ResultItem {
 
     private Entity entity;
 
     private int position;
 
     private float score;
+
+    public ResultItem() {
+
+    }
 
     /**
      * @return the entity
