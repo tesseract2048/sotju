@@ -10,6 +10,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     default-lazy-init="true">
 
     <context:component-scan base-package="org.tju.so.search" />
+    <context:component-scan base-package="org.tju.so.model" />
+    <context:component-scan base-package="org.tju.so.node" />
 
     <bean id="clusterName" class="java.lang.String">
         <constructor-arg value="${cluster.name}" />

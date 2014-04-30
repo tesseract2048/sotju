@@ -3,18 +3,25 @@ package org.tju.so.model.entity;
 import java.util.Map;
 
 import org.tju.so.model.IdBasedObject;
-import org.tju.so.model.ObjectHelper;
 import org.tju.so.model.schema.Schema;
 import org.tju.so.model.site.Site;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class Entity implements IdBasedObject {
 
+    @Expose(serialize = false, deserialize = false)
     private Schema schema;
 
+    @Expose(serialize = false, deserialize = false)
     private Site site;
+
+    private String schemaId;
+
+    private String siteId;
 
     private String id;
 
@@ -26,18 +33,10 @@ public class Entity implements IdBasedObject {
 
     public Entity(Schema schema, Site site, String id,
             Map<String, Object> fieldValues) {
-        this.schema = schema;
-        this.site = site;
-        this.id = id;
-        this.fieldValues = fieldValues;
-    }
-
-    public Entity(String schemaId, String siteId, String id,
-            Map<String, Object> fieldValues) {
-        this.schema = ObjectHelper.getSchema(schemaId);
-        this.site = ObjectHelper.getSite(siteId);
-        this.id = id;
-        this.fieldValues = fieldValues;
+        setSchema(schema);
+        setSite(site);
+        setId(id);
+        setFieldValues(fieldValues);
     }
 
     /**
@@ -53,6 +52,7 @@ public class Entity implements IdBasedObject {
      */
     public void setSchema(Schema schema) {
         this.schema = schema;
+        this.schemaId = schema.getId();
     }
 
     /**
@@ -68,6 +68,7 @@ public class Entity implements IdBasedObject {
      */
     public void setSite(Site site) {
         this.site = site;
+        this.siteId = site.getId();
     }
 
     /**
@@ -106,6 +107,20 @@ public class Entity implements IdBasedObject {
 
     public void setField(String name, Object value) {
         fieldValues.put(name, value);
+    }
+
+    /**
+     * @return the schemaId
+     */
+    public String getSchemaId() {
+        return schemaId;
+    }
+
+    /**
+     * @return the siteId
+     */
+    public String getSiteId() {
+        return siteId;
     }
 
 }

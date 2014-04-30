@@ -5,32 +5,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tju.so.model.ObjectHelper;
 import org.tju.so.model.entity.Entity;
+import org.tju.so.model.holder.SchemaHolder;
+import org.tju.so.model.holder.SiteHolder;
 import org.tju.so.model.schema.Field;
 import org.tju.so.model.schema.Schema;
 import org.tju.so.model.site.Site;
+import org.tju.so.node.ElasticClientInvoker;
 import org.tju.so.search.context.Context;
 import org.tju.so.search.context.Query;
 import org.tju.so.search.context.QueryFilter;
@@ -40,20 +37,19 @@ import org.tju.so.search.context.ResultItem;
  * @author Tianyi HE <hty0807@gmail.com>
  */
 @Service
-public class ElasticSearch implements SearchProvider {
+public class ElasticSearch extends ElasticClientInvoker implements
+        SearchProvider {
 
-    @Resource
-    private String clusterName;
+    @Autowired
+    private SchemaHolder schemaHolder;
 
-    protected Client client;
+    @Autowired
+    private SiteHolder siteHolder;
 
-    protected IndicesAdminClient indices;
+    private IndicesAdminClient indices;
 
     @PostConstruct
     public void init() {
-        Node node = NodeBuilder.nodeBuilder().clusterName(clusterName)
-                .client(true).node();
-        client = node.client();
         indices = client.admin().indices();
     }
 
@@ -87,6 +83,10 @@ public class ElasticSearch implements SearchProvider {
     }
 
     private SearchRequestBuilder setupRequestBuilder(Query query) {
+        if (query.getSites().size() == 0)
+            query.setSites(siteHolder.getAll());
+        if (query.getSchemas().size() == 0)
+            query.setSchemas(schemaHolder.getAll());
         SearchRequestBuilder requestBuilder = client.prepareSearch(ObjectHelper
                 .extractIds(query.getSites()));
         requestBuilder.setTypes(ObjectHelper.extractIds(query.getSchemas()));
@@ -105,8 +105,9 @@ public class ElasticSearch implements SearchProvider {
             ResultItem item = new ResultItem();
             item.setPosition(position++);
             item.setScore(hit.getScore());
-            item.setEntity(new Entity(hit.getType(), hit.getIndex(), hit
-                    .getId(), hit.getSource()));
+            item.setEntity(new Entity(schemaHolder.get(hit.getType()),
+                    siteHolder.get(hit.getIndex()), hit.getId(), hit
+                            .getSource()));
             result.add(item);
         }
         return result;
@@ -143,9 +144,9 @@ public class ElasticSearch implements SearchProvider {
 
     @Override
     public boolean updateSite(Site site) {
-        if (!indices.exists(new IndicesExistsRequest(site.getId())).actionGet()
+        if (!indices.prepareExists(site.getId()).execute().actionGet()
                 .isExists())
-            indices.create(new CreateIndexRequest(site.getId())).actionGet();
+            indices.prepareCreate(site.getId()).execute().actionGet();
         return true;
     }
 
@@ -194,11 +195,10 @@ public class ElasticSearch implements SearchProvider {
     @Override
     public boolean updateSchema(Site[] sites, Schema schema) {
         try {
-            indices.putMapping(
-                    new PutMappingRequest()
-                            .indices(ObjectHelper.extractIds((Object[]) sites))
-                            .type(schema.getId())
-                            .source(buildSchemaMapping(schema))).actionGet();
+            indices.preparePutMapping(ObjectHelper.extractIds((Object[]) sites))
+                    .setType(schema.getId())
+                    .setSource(buildSchemaMapping(schema)).execute()
+                    .actionGet();
             return true;
         } catch (Exception e) {
             return false;
