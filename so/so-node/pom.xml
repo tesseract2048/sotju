@@ -15,6 +15,10 @@
             <artifactId>elasticsearch-analysis-ik</artifactId>
             <version>1.2.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.tju.so</groupId>
+            <artifactId>so-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

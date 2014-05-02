@@ -29,6 +29,7 @@ public class Field {
         this.name = name;
         this.type = type;
         this.isDefault = isDefault;
+        this.isAnalysed = isAnalysed;
         this.boost = boost;
     }
 
@@ -105,6 +106,17 @@ public class Field {
      */
     public void setBoost(float boost) {
         this.boost = boost;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Field [name=" + name + ", type=" + type + ", isDefault="
+                + isDefault + ", isAnalysed=" + isAnalysed + ", boost=" + boost
+                + "]";
     }
 
 }

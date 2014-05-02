@@ -39,8 +39,16 @@ public abstract class AbstractElasticHolder<T extends IdBasedObject> extends
         flush();
     }
 
+    public void clear() {
+        LOG.info("Cleaning up model holder " + getIndex() + "/" + getType() + "...");
+        client.prepareDeleteByQuery(getIndex()).setTypes(getType())
+                .setQuery(QueryBuilders.queryString("*:*")).execute()
+                .actionGet();
+    }
+
     @PostConstruct
     public void init() {
+        LOG.info("Initializing model holder " + getIndex() + "/" + getType() + "...");
         IndicesAdminClient indices = client.admin().indices();
         if (!indices.prepareExists(getIndex()).execute().actionGet().isExists()) {
             indices.prepareCreate(getIndex()).execute().actionGet();
@@ -49,14 +57,15 @@ public abstract class AbstractElasticHolder<T extends IdBasedObject> extends
 
     @Override
     public void flush() {
+        LOG.info("Flushing model holder " + getIndex() + "/" + getType() + "...");
         cachedObjects = new HashMap<String, T>();
     }
 
     @Override
     public void put(T model) {
+        LOG.info("Updating " + model.getId() + " in model holder " + getIndex() + "/" + getType() + "...");
         cachedObjects.put(model.getId(), model);
         String document = new Gson().toJson(model);
-        LOG.info("GSON:" + document);
         client.prepareIndex(getIndex(), getType(), model.getId())
                 .setSource(document).execute().actionGet();
     }

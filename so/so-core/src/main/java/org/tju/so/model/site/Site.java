@@ -78,4 +78,14 @@ public class Site implements IdBasedObject {
         this.rankingFactors = rankingFactors;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Site [id=" + id + ", name=" + name + ", homeUrl=" + homeUrl
+                + "]";
+    }
+
 }

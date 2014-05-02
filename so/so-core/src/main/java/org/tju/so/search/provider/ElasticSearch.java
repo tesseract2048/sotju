@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -18,6 +19,8 @@ import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tju.so.model.ObjectHelper;
@@ -39,6 +42,9 @@ import org.tju.so.search.context.ResultItem;
 @Service
 public class ElasticSearch extends ElasticClientInvoker implements
         SearchProvider {
+
+    private static final Logger LOG = LoggerFactory
+            .getLogger(ElasticSearch.class);
 
     @Autowired
     private SchemaHolder schemaHolder;
@@ -115,6 +121,7 @@ public class ElasticSearch extends ElasticClientInvoker implements
 
     @Override
     public Context search(Query query) {
+        LOG.info("Search request: " + query.toString());
         SearchRequestBuilder request = setupRequestBuilder(query);
         SearchResponse response = request.execute().actionGet();
         List<ResultItem> result = buildResult(response);
@@ -125,17 +132,29 @@ public class ElasticSearch extends ElasticClientInvoker implements
     public boolean index(Entity... entities) {
         BulkRequestBuilder bulkRequest = client.prepareBulk();
         for (Entity entity: entities) {
+            LOG.info("Indexing " + entity.getSite().getId() + "/"
+                    + entity.getSchema().getId() + "/" + entity.getId() + "...");
             bulkRequest.add(client.prepareIndex(entity.getSite().getId(),
                     entity.getSchema().getId(), entity.getId()).setSource(
                     entity.getFieldValues()));
         }
 
         BulkResponse bulkResponse = bulkRequest.execute().actionGet();
+        if (bulkResponse.hasFailures()) {
+            for (BulkItemResponse item: bulkResponse.getItems()) {
+                if (item.isFailed()) {
+                    LOG.error("Failed to index: " + item.getFailureMessage());
+                }
+            }
+
+        }
         return !bulkResponse.hasFailures();
     }
 
     @Override
     public boolean delete(Entity entity) {
+        LOG.info("Deleteing " + entity.getSite().getId() + "/"
+                + entity.getSchema().getId() + "/" + entity.getId() + "...");
         client.prepareDelete(entity.getSite().getId(),
                 entity.getSchema().getId(), entity.getId()).execute()
                 .actionGet();
@@ -144,6 +163,7 @@ public class ElasticSearch extends ElasticClientInvoker implements
 
     @Override
     public boolean updateSite(Site site) {
+        LOG.info("Updating site " + site.getId() + "...");
         if (!indices.prepareExists(site.getId()).execute().actionGet()
                 .isExists())
             indices.prepareCreate(site.getId()).execute().actionGet();
@@ -176,6 +196,7 @@ public class ElasticSearch extends ElasticClientInvoker implements
             }
             if (field.isAnalysed()) {
                 mapping.field("index", "analyzed");
+                mapping.field("analyzer", "ik");
             } else {
                 mapping.field("index", "not_analyzed");
             }
@@ -194,6 +215,7 @@ public class ElasticSearch extends ElasticClientInvoker implements
 
     @Override
     public boolean updateSchema(Site[] sites, Schema schema) {
+        LOG.info("Updating schema " + schema.getId() + "...");
         try {
             indices.preparePutMapping(ObjectHelper.extractIds((Object[]) sites))
                     .setType(schema.getId())

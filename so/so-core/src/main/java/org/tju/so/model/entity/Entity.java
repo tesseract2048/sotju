@@ -6,18 +6,14 @@ import org.tju.so.model.IdBasedObject;
 import org.tju.so.model.schema.Schema;
 import org.tju.so.model.site.Site;
 
-import com.google.gson.annotations.Expose;
-
 /**
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class Entity implements IdBasedObject {
 
-    @Expose(serialize = false, deserialize = false)
-    private Schema schema;
+    private transient Schema schema;
 
-    @Expose(serialize = false, deserialize = false)
-    private Site site;
+    private transient Site site;
 
     private String schemaId;
 

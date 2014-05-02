@@ -7,6 +7,9 @@ import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author Tianyi HE <hty0807@gmail.com>
+ */
 @Service
 public class ClientManager {
 

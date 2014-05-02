@@ -77,4 +77,14 @@ public class Schema implements IdBasedObject {
         this.fields = fields;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Schema [id=" + id + ", name=" + name + ", rankFactor="
+                + rankFactor + ", fields=" + fields + "]";
+    }
+
 }

@@ -5,12 +5,12 @@ import org.tju.so.model.site.Site;
 /**
  * @author Tianyi HE <hty0807@gmail.com>
  */
-public class Eweb extends Site {
+public class Pt extends Site {
 
-    public Eweb() {
-        setId("eweb");
-        setName("天津大学办公网");
-        setHomeUrl("http://e.tju.edu.cn/");
+    public Pt() {
+        setId("pt");
+        setName("北洋园PT");
+        setHomeUrl("http://pt.tju.edu.cn/");
         setRankingFactors(null);
     }
 }

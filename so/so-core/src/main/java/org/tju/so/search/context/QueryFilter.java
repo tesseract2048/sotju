@@ -69,4 +69,13 @@ public abstract class QueryFilter {
         this.value = value;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "QueryFilter [field=" + field + ", type=" + type + ", value="
+                + value + "]";
+    }
+
 }

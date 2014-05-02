@@ -3,6 +3,7 @@ package org.tju.so.search.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.tju.so.model.ObjectHelper;
 import org.tju.so.model.schema.Schema;
 import org.tju.so.model.site.Site;
 
@@ -13,9 +14,9 @@ public class Query {
 
     private String query;
 
-    private List<Schema> schemas;
+    private transient List<Schema> schemas;
 
-    private List<Site> sites;
+    private transient List<Site> sites;
 
     private List<QueryFilter> filters;
 
@@ -124,6 +125,18 @@ public class Query {
      */
     public void setLimit(int limit) {
         this.limit = limit;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Query [query=" + query + ", schemas="
+                + ObjectHelper.extractIds(schemas) + ", sites="
+                + ObjectHelper.extractIds(sites) + ", filters=" + filters
+                + ", start=" + start + ", limit=" + limit + "]";
     }
 
 }
