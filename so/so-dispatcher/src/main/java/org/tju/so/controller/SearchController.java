@@ -1,5 +1,7 @@
 package org.tju.so.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +17,24 @@ import com.google.gson.Gson;
 
 @Controller
 @RequestMapping(value = {
-    "/search"
+    "/"
 })
 public class SearchController {
 
     @Autowired
     private SearchProvider searchProvider;
 
-    @RequestMapping(produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/complete", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String actionComplete(
+            @RequestParam(value = "q", required = true) final String q,
+            @RequestParam(value = "limit", required = false, defaultValue = "10") final int limit,
+            HttpServletRequest req) throws Exception {
+        List<String> completions = searchProvider.getCompletions(q, limit);
+        return new Gson().toJson(completions);
+    }
+
+    @RequestMapping(value = "/search", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String actionSearch(
             @RequestParam(value = "q", required = true) final String q,

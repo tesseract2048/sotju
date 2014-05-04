@@ -35,6 +35,8 @@ public class SchemaImporter {
         siteHolder.put(new Eweb());
         siteHolder.put(new Pt());
         siteHolder.put(new Seeworld());
+
+        search.initIndices();
         search.updateSite(new Eweb());
         search.updateSite(new Pt());
         search.updateSite(new Seeworld());

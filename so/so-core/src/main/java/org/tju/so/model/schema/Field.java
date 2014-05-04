@@ -15,6 +15,8 @@ public class Field {
 
     private boolean isAnalysed;
 
+    private boolean isKeyword;
+
     private float boost;
 
     private List<Field> childFields;
@@ -24,22 +26,31 @@ public class Field {
     }
 
     public Field(String name, FieldType type, boolean isDefault,
-            boolean isAnalysed) {
-        this(name, type, isDefault, isAnalysed, 1.0f);
+            boolean isAnalysed, boolean isKeyword) {
+        this(name, type, isDefault, isAnalysed, isKeyword, 1.0f);
     }
 
     public Field(String name, FieldType type, boolean isDefault,
-            boolean isAnalysed, float boost) {
+            boolean isAnalysed) {
+        this(name, type, isDefault, isAnalysed, false, 1.0f);
+    }
+
+    public Field(String name, FieldType type) {
+        this(name, type, false, false, false, 1.0f);
+    }
+
+    public Field(String name, FieldType type, boolean isDefault,
+            boolean isAnalysed, boolean isKeyword, float boost) {
         this.name = name;
         this.type = type;
         this.isDefault = isDefault;
         this.isAnalysed = isAnalysed;
+        this.isKeyword = isKeyword;
         this.boost = boost;
     }
 
-    public Field(String name, FieldType type, boolean isDefault,
-            boolean isAnalysed, List<Field> childFields) {
-        this(name, type, isDefault, isAnalysed, 1.0f);
+    public Field(String name, FieldType type, List<Field> childFields) {
+        this(name, type, false, false, false, 1.0f);
         this.childFields = childFields;
     }
 
@@ -101,6 +112,21 @@ public class Field {
      */
     public void setAnalysed(boolean isAnalysed) {
         this.isAnalysed = isAnalysed;
+    }
+
+    /**
+     * @return the isKeyword
+     */
+    public boolean isKeyword() {
+        return isKeyword;
+    }
+
+    /**
+     * @param isKeyword
+     *            the isKeyword to set
+     */
+    public void setKeyword(boolean isKeyword) {
+        this.isKeyword = isKeyword;
     }
 
     /**

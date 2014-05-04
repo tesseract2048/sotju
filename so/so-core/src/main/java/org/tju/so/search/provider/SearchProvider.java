@@ -1,5 +1,7 @@
 package org.tju.so.search.provider;
 
+import java.util.List;
+
 import org.tju.so.model.entity.Entity;
 import org.tju.so.model.schema.Schema;
 import org.tju.so.model.site.Site;
@@ -21,4 +23,7 @@ public interface SearchProvider {
 
     boolean updateSchema(Site[] sites, Schema schema);
 
+    boolean initIndices();
+
+    List<String> getCompletions(String keyword, int limit);
 }

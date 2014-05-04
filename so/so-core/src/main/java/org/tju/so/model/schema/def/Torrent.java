@@ -15,8 +15,8 @@ public class Torrent extends Schema {
         setId("torrent");
         setName("种子");
         setFields(Arrays.asList(new Field[] {
-            new Field("title", FieldType.STRING, true, true),
-            new Field("type", FieldType.STRING, true, true),
+            new Field("title", FieldType.STRING, true, true, true),
+            new Field("type", FieldType.STRING, true, true, true),
             new Field("info", FieldType.STRING, true, true),
             new Field("description", FieldType.STRING, true, true),
             new Field("view", FieldType.INTEGER, false, false),
@@ -26,12 +26,11 @@ public class Torrent extends Schema {
             new Field("seeder", FieldType.INTEGER, false, false),
             new Field("leecher", FieldType.INTEGER, false, false),
             new Field("hash", FieldType.STRING, false, false),
-            new Field("torrentName", FieldType.STRING, true, true),
-            new Field("files", FieldType.ARRAY, false, false, Arrays
-                    .asList(new Field[] {
-                        new Field("name", FieldType.STRING, true, true),
-                        new Field("length", FieldType.FLOAT, false, false)
-                    }))
+            new Field("torrentName", FieldType.STRING, true, true, true),
+            new Field("files", FieldType.ARRAY, Arrays.asList(new Field[] {
+                new Field("name", FieldType.STRING, true, true, true),
+                new Field("length", FieldType.FLOAT, false, false)
+            }))
         }));
         setRankFactor(1.0f);
     }
