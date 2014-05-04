@@ -100,7 +100,9 @@ public class ElasticSearch extends ElasticClientInvoker implements
                 .extractIds(query.getSites()));
         requestBuilder.setTypes(ObjectHelper.extractIds(query.getSchemas()));
         requestBuilder.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
-        requestBuilder.setQuery(QueryBuilders.queryString(query.getQuery()));
+        // TODO
+        requestBuilder.setQuery(QueryBuilders.functionScoreQuery(QueryBuilders
+                .queryString(query.getQuery())));
         requestBuilder.setFrom(query.getStart());
         requestBuilder.setSize(query.getLimit());
         requestBuilder.setPostFilter(makeFilterBuilder(query.getFilters()));

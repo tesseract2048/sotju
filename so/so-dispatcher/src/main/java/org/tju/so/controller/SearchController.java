@@ -25,9 +25,14 @@ public class SearchController {
     @RequestMapping(produces = "application/json; charset=utf-8")
     @ResponseBody
     public String actionSearch(
-            @RequestParam(value = "q", required = true) final String query,
+            @RequestParam(value = "q", required = true) final String q,
+            @RequestParam(value = "start", required = false, defaultValue = "0") final int start,
+            @RequestParam(value = "limit", required = false, defaultValue = "15") final int limit,
             HttpServletRequest req) throws Exception {
-        Context context = searchProvider.search(new Query(query));
+        Query query = new Query(q);
+        query.setStart(start);
+        query.setLimit(limit);
+        Context context = searchProvider.search(query);
         return new Gson().toJson(context);
     }
 }
