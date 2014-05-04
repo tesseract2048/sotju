@@ -8,15 +8,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.tju.so.util.ScriptUtil;
 
 import com.google.gson.Gson;
 
@@ -24,8 +19,6 @@ import com.google.gson.Gson;
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class ParserUtil {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ParserUtil.class);
 
     private static Method namedGroupsMethod;
 
@@ -79,19 +72,11 @@ public class ParserUtil {
     @SuppressWarnings("unchecked")
     public static List<Map<String, Object>> extractWithScript(Object content,
             String script) {
-        ScriptEngine engine = new ScriptEngineManager()
-                .getEngineByName("JavaScript");
-        try {
-            String contentJson = new Gson().toJson(content);
-            String execute = "function udf(content) {\n" + script
-                    + ";};\n" + "JSON.stringify(udf(" + contentJson
-                    + "));";
-            Object eval = engine.eval(execute);
-            return new Gson().fromJson(eval.toString(), List.class);
-        } catch (ScriptException e) {
-            LOG.error("Script execution failed", e);
-            return new ArrayList<Map<String, Object>>();
-        }
+        String contentJson = new Gson().toJson(content);
+        String execute = "function udf(content) {\n" + script + ";};\n"
+                + "JSON.stringify(udf(" + contentJson + "));";
+        Object eval = ScriptUtil.eval(execute);
+        return new Gson().fromJson(eval.toString(), List.class);
     }
 
 }

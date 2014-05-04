@@ -11,7 +11,9 @@ public class ResultItem {
 
     private int position;
 
-    private float score;
+    private double score;
+
+    private double docBoost;
 
     public ResultItem() {
 
@@ -50,7 +52,7 @@ public class ResultItem {
     /**
      * @return the score
      */
-    public float getScore() {
+    public double getScore() {
         return score;
     }
 
@@ -58,8 +60,23 @@ public class ResultItem {
      * @param score
      *            the score to set
      */
-    public void setScore(float score) {
+    public void setScore(double score) {
         this.score = score;
+    }
+
+    /**
+     * @return the docBoost
+     */
+    public double getDocBoost() {
+        return docBoost;
+    }
+
+    /**
+     * @param docBoost
+     *            the docBoost to set
+     */
+    public void setDocBoost(double docBoost) {
+        this.docBoost = docBoost;
     }
 
 }

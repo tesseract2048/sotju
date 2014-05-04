@@ -1,9 +1,6 @@
 package org.tju.so.model.site;
 
-import java.util.Map;
-
 import org.tju.so.model.IdBasedObject;
-import org.tju.so.model.schema.Schema;
 
 /**
  * @author Tianyi HE <hty0807@gmail.com>
@@ -16,7 +13,7 @@ public class Site implements IdBasedObject {
 
     private String homeUrl;
 
-    private Map<Schema, Float> rankingFactors;
+    private float rankingFactors;
 
     /**
      * @return the id
@@ -66,7 +63,7 @@ public class Site implements IdBasedObject {
     /**
      * @return the rankingFactors
      */
-    public Map<Schema, Float> getRankingFactors() {
+    public float getRankingFactors() {
         return rankingFactors;
     }
 
@@ -74,7 +71,7 @@ public class Site implements IdBasedObject {
      * @param rankingFactors
      *            the rankingFactors to set
      */
-    public void setRankingFactors(Map<Schema, Float> rankingFactors) {
+    public void setRankingFactors(float rankingFactors) {
         this.rankingFactors = rankingFactors;
     }
 
@@ -85,7 +82,7 @@ public class Site implements IdBasedObject {
     @Override
     public String toString() {
         return "Site [id=" + id + ", name=" + name + ", homeUrl=" + homeUrl
-                + "]";
+                + ", rankingFactors=" + rankingFactors + "]";
     }
 
 }

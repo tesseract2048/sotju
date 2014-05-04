@@ -21,7 +21,6 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion.Entry;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion.Entry.Option;
@@ -34,8 +33,6 @@ import org.tju.so.model.ObjectHelper;
 import org.tju.so.model.entity.Entity;
 import org.tju.so.model.holder.SchemaHolder;
 import org.tju.so.model.holder.SiteHolder;
-import org.tju.so.model.schema.Field;
-import org.tju.so.model.schema.FieldType;
 import org.tju.so.model.schema.Schema;
 import org.tju.so.model.site.Site;
 import org.tju.so.node.ElasticClientInvoker;
@@ -43,8 +40,8 @@ import org.tju.so.search.context.Context;
 import org.tju.so.search.context.Query;
 import org.tju.so.search.context.QueryFilter;
 import org.tju.so.search.context.ResultItem;
-import org.tju.so.util.LanguageUtil;
 import org.tju.so.util.Pair;
+import org.tju.so.util.SearchUtil;
 
 import com.google.gson.Gson;
 
@@ -113,9 +110,7 @@ public class ElasticSearch extends ElasticClientInvoker implements
                 .extractIds(query.getSites()));
         requestBuilder.setTypes(ObjectHelper.extractIds(query.getSchemas()));
         requestBuilder.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
-        // TODO
-        requestBuilder.setQuery(QueryBuilders.functionScoreQuery(QueryBuilders
-                .queryString(query.getQuery())));
+        requestBuilder.setQuery(SearchUtil.buildQuery(query.getQuery()));
         requestBuilder.setFrom(query.getStart());
         requestBuilder.setSize(query.getLimit());
         requestBuilder.setPostFilter(makeFilterBuilder(query.getFilters()));
@@ -129,9 +124,11 @@ public class ElasticSearch extends ElasticClientInvoker implements
             ResultItem item = new ResultItem();
             item.setPosition(position++);
             item.setScore(hit.getScore());
+            Map<String, Object> values = hit.getSource();
+            item.setDocBoost((double) values.get(SearchUtil.BOOST_FIELD));
+            values.remove(SearchUtil.BOOST_FIELD);
             item.setEntity(new Entity(schemaHolder.get(hit.getType()),
-                    siteHolder.get(hit.getIndex()), hit.getId(), hit
-                            .getSource()));
+                    siteHolder.get(hit.getIndex()), hit.getId(), values));
             result.add(item);
         }
         return result;
@@ -146,51 +143,21 @@ public class ElasticSearch extends ElasticClientInvoker implements
         return new Context(query, result, response.getTookInMillis());
     }
 
-    @SuppressWarnings("unchecked")
-    private List<Pair<String, String>> makeCompletions(List<Field> fields,
-            Map<String, Object> values) {
-        List<Pair<String, String>> completions = new ArrayList<Pair<String, String>>();
-        for (Field field: fields) {
-            Object value = values.get(field.getName());
-            if (value == null)
-                continue;
-            if (field.getType() == FieldType.OBJECT) {
-                completions.addAll(makeCompletions(field.getChildFields(),
-                        (Map<String, Object>) value));
-            } else if (field.getType() == FieldType.ARRAY) {
-                List<Map<String, Object>> items = (List<Map<String, Object>>) value;
-                for (Map<String, Object> item: items) {
-                    completions.addAll(makeCompletions(field.getChildFields(),
-                            item));
-                }
-            } else if (field.isKeyword()) {
-                String text = value.toString();
-                completions.add(new Pair<String, String>(text, text));
-                if (LanguageUtil.hasUnicode(text)) {
-                    completions.add(new Pair<String, String>(LanguageUtil
-                            .chinese2Pinyin(text), text));
-                }
-            }
-        }
-        return completions;
-    }
-
-    private List<Pair<String, String>> makeCompletions(Entity entity) {
-        return makeCompletions(entity.getSchema().getFields(),
-                entity.getFieldValues());
-    }
-
     @Override
     public boolean index(Entity... entities) {
         BulkRequestBuilder bulkRequest = client.prepareBulk();
         for (Entity entity: entities) {
             LOG.info("Indexing " + entity.getSite().getId() + "/"
                     + entity.getSchema().getId() + "/" + entity.getId() + "...");
+            double boost = SearchUtil.calcuateBoost(entity);
+            entity.getFieldValues().put(SearchUtil.BOOST_FIELD, boost);
             String document = new Gson().toJson(entity.getFieldValues());
+            entity.getFieldValues().remove(SearchUtil.BOOST_FIELD);
             bulkRequest.add(client.prepareIndex(entity.getSite().getId(),
                     entity.getSchema().getId(), entity.getId()).setSource(
                     document));
-            List<Pair<String, String>> completions = makeCompletions(entity);
+            List<Pair<String, String>> completions = SearchUtil
+                    .makeCompletions(entity);
             LOG.info("Completions: " + completions);
             for (int i = 0; i < completions.size(); i++) {
                 Pair<String, String> completion = completions.get(i);
@@ -249,67 +216,6 @@ public class ElasticSearch extends ElasticClientInvoker implements
         return true;
     }
 
-    private void buildFieldProperties(XContentBuilder mapping,
-            List<Field> fields) throws IOException {
-        for (Field field: fields) {
-            buildFieldProperties(mapping, field);
-        }
-    }
-
-    private void buildFieldProperties(XContentBuilder mapping, Field field)
-            throws IOException {
-        mapping.startObject(field.getName());
-        switch (field.getType()) {
-            case INTEGER:
-                mapping.field("type", "long");
-                break;
-            case FLOAT:
-                mapping.field("type", "double");
-                break;
-            case STRING:
-                mapping.field("type", "string");
-                break;
-            case DATE:
-                mapping.field("type", "date");
-                break;
-            case BOOLEAN:
-                mapping.field("type", "boolean");
-                break;
-            case OBJECT:
-                mapping.field("type", "object");
-            case ARRAY:
-                mapping.startObject("properties");
-                buildFieldProperties(mapping, field.getChildFields());
-                mapping.endObject();
-            default:
-        }
-        if (field.isAnalysed()) {
-            mapping.field("index", "analyzed");
-            mapping.field("analyzer", "ik");
-        } else {
-            mapping.field("index", "not_analyzed");
-        }
-        if (field.isDefault()) {
-            mapping.field("include_in_all", true);
-        } else {
-            mapping.field("include_in_all", false);
-        }
-        mapping.field("boost", field.getBoost());
-        mapping.field("store", true);
-        mapping.endObject();
-    }
-
-    private XContentBuilder buildSchemaMapping(Schema schema)
-            throws IOException {
-        XContentBuilder mapping = XContentFactory.jsonBuilder().startObject()
-                .startObject(schema.getId()).startObject("_source")
-                .field("enabled", true).endObject().startObject("_all")
-                .field("enabled", true).endObject().startObject("properties");
-        buildFieldProperties(mapping, schema.getFields());
-        mapping.endObject().endObject().endObject();
-        return mapping;
-    }
-
     @Override
     public boolean updateSchema(Site[] sites, Schema schema) {
         LOG.info("Updating schema " + schema.getId() + "...");
@@ -317,8 +223,8 @@ public class ElasticSearch extends ElasticClientInvoker implements
             PutMappingResponse response = indices
                     .preparePutMapping(
                             ObjectHelper.extractIds((Object[]) sites))
-                    .setType(schema.getId())
-                    .setSource(buildSchemaMapping(schema)).execute()
+                    .setType(schema.getId()).setIgnoreConflicts(true)
+                    .setSource(SearchUtil.buildSchemaMapping(schema)).execute()
                     .actionGet();
             if (!response.isAcknowledged()) {
                 LOG.error("Failed to update schema");

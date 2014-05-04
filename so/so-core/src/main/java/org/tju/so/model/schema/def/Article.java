@@ -24,6 +24,7 @@ public class Article extends Schema {
             new Field("content", FieldType.STRING, true, true)
         }));
         setRankFactor(1.0f);
+        setDocumentRankExpr("Math.log(parseInt(doc.read))");
     }
 
 }

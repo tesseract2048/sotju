@@ -11,6 +11,6 @@ public class Seeworld extends Site {
         setId("seeworld");
         setName("天津大学SeeWorld视频中心");
         setHomeUrl("http://see.tju.edu.cn/");
-        setRankingFactors(null);
+        setRankingFactors(1.0f);
     }
 }

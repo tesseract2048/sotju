@@ -17,6 +17,8 @@ public class Schema implements IdBasedObject {
 
     private List<Field> fields;
 
+    private String documentRankExpr;
+
     /**
      * @return the id
      */
@@ -84,6 +86,21 @@ public class Schema implements IdBasedObject {
         this.fields = fields;
     }
 
+    /**
+     * @return the documentRankExpr
+     */
+    public String getDocumentRankExpr() {
+        return documentRankExpr;
+    }
+
+    /**
+     * @param documentRankExpr
+     *            the documentRankExpr to set
+     */
+    public void setDocumentRankExpr(String documentRankExpr) {
+        this.documentRankExpr = documentRankExpr;
+    }
+
     /*
      * (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -91,7 +108,8 @@ public class Schema implements IdBasedObject {
     @Override
     public String toString() {
         return "Schema [id=" + id + ", name=" + name + ", rankFactor="
-                + rankFactor + ", fields=" + fields + "]";
+                + rankFactor + ", fields=" + fields + ", documentRankExpr="
+                + documentRankExpr + "]";
     }
 
 }

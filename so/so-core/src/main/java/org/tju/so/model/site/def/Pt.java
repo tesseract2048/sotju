@@ -11,6 +11,6 @@ public class Pt extends Site {
         setId("pt");
         setName("北洋园PT");
         setHomeUrl("http://pt.tju.edu.cn/");
-        setRankingFactors(null);
+        setRankingFactors(1.0f);
     }
 }

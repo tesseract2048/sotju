@@ -25,7 +25,6 @@ public class Torrent extends Schema {
             new Field("size", FieldType.STRING, false, false),
             new Field("seeder", FieldType.INTEGER, false, false),
             new Field("leecher", FieldType.INTEGER, false, false),
-            new Field("hash", FieldType.STRING, false, false),
             new Field("torrentName", FieldType.STRING, true, true, true),
             new Field("files", FieldType.ARRAY, Arrays.asList(new Field[] {
                 new Field("name", FieldType.STRING, true, true, true),
@@ -33,6 +32,7 @@ public class Torrent extends Schema {
             }))
         }));
         setRankFactor(1.0f);
+        setDocumentRankExpr("Math.log(parseInt(doc.download) + parseInt(doc.seeder)*1.8 + parseInt(doc.leecher)*1.4)");
     }
 
 }

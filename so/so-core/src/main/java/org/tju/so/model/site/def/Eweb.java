@@ -11,6 +11,6 @@ public class Eweb extends Site {
         setId("eweb");
         setName("天津大学办公网");
         setHomeUrl("http://e.tju.edu.cn/");
-        setRankingFactors(null);
+        setRankingFactors(1.0f);
     }
 }
