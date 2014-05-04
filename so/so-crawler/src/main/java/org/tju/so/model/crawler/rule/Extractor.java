@@ -15,7 +15,7 @@ public class Extractor {
     public final static String INVOKE_FINISH = "_finish";
 
     public enum PatternType {
-        REGEX, DOM, WHOLE_TEXT, JSON, SCRIPT
+        REGEX, DOM, WHOLE_TEXT, SCRIPT
     }
 
     public enum FunctionType {

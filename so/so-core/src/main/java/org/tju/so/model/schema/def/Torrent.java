@@ -22,11 +22,16 @@ public class Torrent extends Schema {
             new Field("view", FieldType.INTEGER, false, false),
             new Field("click", FieldType.INTEGER, false, false),
             new Field("download", FieldType.INTEGER, false, false),
-            new Field("size", FieldType.INTEGER, false, false),
+            new Field("size", FieldType.STRING, false, false),
             new Field("seeder", FieldType.INTEGER, false, false),
             new Field("leecher", FieldType.INTEGER, false, false),
             new Field("hash", FieldType.STRING, false, false),
-            new Field("torrentName", FieldType.STRING, true, true)
+            new Field("torrentName", FieldType.STRING, true, true),
+            new Field("files", FieldType.ARRAY, false, false, Arrays
+                    .asList(new Field[] {
+                        new Field("name", FieldType.STRING, true, true),
+                        new Field("length", FieldType.FLOAT, false, false)
+                    }))
         }));
         setRankFactor(1.0f);
     }

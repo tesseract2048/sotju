@@ -1,5 +1,6 @@
 package org.tju.so.model.entity;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.tju.so.model.IdBasedObject;
@@ -24,7 +25,7 @@ public class Entity implements IdBasedObject {
     private Map<String, Object> fieldValues;
 
     public Entity() {
-
+        fieldValues = new HashMap<String, Object>();
     }
 
     public Entity(Schema schema, Site site, String id,

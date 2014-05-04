@@ -1,5 +1,7 @@
 package org.tju.so.model.schema;
 
+import java.util.List;
+
 /**
  * @author Tianyi HE <hty0807@gmail.com>
  */
@@ -14,6 +16,8 @@ public class Field {
     private boolean isAnalysed;
 
     private float boost;
+
+    private List<Field> childFields;
 
     public Field() {
 
@@ -31,6 +35,12 @@ public class Field {
         this.isDefault = isDefault;
         this.isAnalysed = isAnalysed;
         this.boost = boost;
+    }
+
+    public Field(String name, FieldType type, boolean isDefault,
+            boolean isAnalysed, List<Field> childFields) {
+        this(name, type, isDefault, isAnalysed, 1.0f);
+        this.childFields = childFields;
     }
 
     /**
@@ -106,6 +116,21 @@ public class Field {
      */
     public void setBoost(float boost) {
         this.boost = boost;
+    }
+
+    /**
+     * @return the childFields
+     */
+    public List<Field> getChildFields() {
+        return childFields;
+    }
+
+    /**
+     * @param childFields
+     *            the childFields to set
+     */
+    public void setChildFields(List<Field> childFields) {
+        this.childFields = childFields;
     }
 
     /*

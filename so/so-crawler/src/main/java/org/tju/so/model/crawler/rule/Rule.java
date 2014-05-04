@@ -12,6 +12,10 @@ import org.tju.so.model.IdBasedObject;
  */
 public class Rule implements IdBasedObject {
 
+    public final static int NEVER_REFRESH = -1;
+
+    public final static int EVER_REFRESH = 0;
+
     private String id;
 
     private String siteId;

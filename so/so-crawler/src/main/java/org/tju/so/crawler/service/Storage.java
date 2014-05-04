@@ -142,7 +142,7 @@ public class Storage {
             public Long execute(Jedis jedis) throws Exception {
                 String queueKey = String.format(queueKeyFormat, task
                         .getPriority().toString());
-                return jedis.rpush(queueKey, document);
+                return jedis.lpush(queueKey, document);
             }
 
         });

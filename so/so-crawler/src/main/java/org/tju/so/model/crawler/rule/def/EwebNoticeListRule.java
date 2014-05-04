@@ -21,7 +21,7 @@ public class EwebNoticeListRule extends Rule {
         setId("eweb_notice_list");
         setSiteId("eweb");
         setUrlPattern("http://e.tju.edu.cn/News/noticeList.do");
-        setRefreshRate(86400);
+        setRefreshRate(EVER_REFRESH);
         setExtractors(Arrays
                 .asList(new Extractor[] {
                     new Extractor(PatternType.REGEX, COLUMN_PATTERN).function(
@@ -53,7 +53,7 @@ public class EwebNoticeListRule extends Rule {
                                             FunctionType.FORMAT_DATE,
                                             "yy-MM-dd HH:mm:ss").append(
                                             FunctionType.STRIP_AND_STORE,
-                                            "date", "$ret"))
+                                            "date"))
                 }));
     }
 

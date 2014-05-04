@@ -62,6 +62,13 @@ public class Schema implements IdBasedObject {
         this.rankFactor = rankFactor;
     }
 
+    public Field getField(String name) {
+        for (Field field: getFields())
+            if (field.getName().equals(name))
+                return field;
+        return null;
+    }
+
     /**
      * @return the fields
      */

@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -35,6 +36,8 @@ import org.tju.so.search.context.Context;
 import org.tju.so.search.context.Query;
 import org.tju.so.search.context.QueryFilter;
 import org.tju.so.search.context.ResultItem;
+
+import com.google.gson.Gson;
 
 /**
  * @author Tianyi HE <hty0807@gmail.com>
@@ -134,9 +137,10 @@ public class ElasticSearch extends ElasticClientInvoker implements
         for (Entity entity: entities) {
             LOG.info("Indexing " + entity.getSite().getId() + "/"
                     + entity.getSchema().getId() + "/" + entity.getId() + "...");
+            String document = new Gson().toJson(entity.getFieldValues());
             bulkRequest.add(client.prepareIndex(entity.getSite().getId(),
                     entity.getSchema().getId(), entity.getId()).setSource(
-                    entity.getFieldValues()));
+                    document));
         }
 
         BulkResponse bulkResponse = bulkRequest.execute().actionGet();
@@ -170,45 +174,63 @@ public class ElasticSearch extends ElasticClientInvoker implements
         return true;
     }
 
+    private void buildFieldProperties(XContentBuilder mapping,
+            List<Field> fields) throws IOException {
+        for (Field field: fields) {
+            buildFieldProperties(mapping, field);
+        }
+    }
+
+    private void buildFieldProperties(XContentBuilder mapping, Field field)
+            throws IOException {
+        mapping.startObject(field.getName());
+        switch (field.getType()) {
+            case INTEGER:
+                mapping.field("type", "long");
+                break;
+            case FLOAT:
+                mapping.field("type", "double");
+                break;
+            case STRING:
+                mapping.field("type", "string");
+                break;
+            case DATE:
+                mapping.field("type", "date");
+                break;
+            case BOOLEAN:
+                mapping.field("type", "boolean");
+                break;
+            case OBJECT:
+                mapping.field("type", "object");
+            case ARRAY:
+                mapping.startObject("properties");
+                buildFieldProperties(mapping, field.getChildFields());
+                mapping.endObject();
+            default:
+        }
+        if (field.isAnalysed()) {
+            mapping.field("index", "analyzed");
+            mapping.field("analyzer", "ik");
+        } else {
+            mapping.field("index", "not_analyzed");
+        }
+        if (field.isDefault()) {
+            mapping.field("include_in_all", true);
+        } else {
+            mapping.field("include_in_all", false);
+        }
+        mapping.field("boost", field.getBoost());
+        mapping.field("store", true);
+        mapping.endObject();
+    }
+
     private XContentBuilder buildSchemaMapping(Schema schema)
             throws IOException {
         XContentBuilder mapping = XContentFactory.jsonBuilder().startObject()
                 .startObject(schema.getId()).startObject("_source")
                 .field("enabled", true).endObject().startObject("_all")
                 .field("enabled", true).endObject().startObject("properties");
-        for (Field field: schema.getFields()) {
-            mapping.startObject(field.getName());
-            switch (field.getType()) {
-                case INTEGER:
-                    mapping.field("type", "long");
-                    break;
-                case FLOAT:
-                    mapping.field("type", "double");
-                    break;
-                case STRING:
-                    mapping.field("type", "string");
-                    break;
-                case DATE:
-                    mapping.field("type", "date");
-                    break;
-                case BOOLEAN:
-                    mapping.field("type", "boolean");
-            }
-            if (field.isAnalysed()) {
-                mapping.field("index", "analyzed");
-                mapping.field("analyzer", "ik");
-            } else {
-                mapping.field("index", "not_analyzed");
-            }
-            if (field.isDefault()) {
-                mapping.field("include_in_all", true);
-            } else {
-                mapping.field("include_in_all", false);
-            }
-            mapping.field("boost", field.getBoost());
-            mapping.field("store", true);
-            mapping.endObject();
-        }
+        buildFieldProperties(mapping, schema.getFields());
         mapping.endObject().endObject().endObject();
         return mapping;
     }
@@ -217,11 +239,16 @@ public class ElasticSearch extends ElasticClientInvoker implements
     public boolean updateSchema(Site[] sites, Schema schema) {
         LOG.info("Updating schema " + schema.getId() + "...");
         try {
-            indices.preparePutMapping(ObjectHelper.extractIds((Object[]) sites))
+            PutMappingResponse response = indices
+                    .preparePutMapping(
+                            ObjectHelper.extractIds((Object[]) sites))
                     .setType(schema.getId())
                     .setSource(buildSchemaMapping(schema)).execute()
                     .actionGet();
-            return true;
+            if (!response.isAcknowledged()) {
+                LOG.error("Failed to update schema");
+            }
+            return response.isAcknowledged();
         } catch (Exception e) {
             return false;
         }

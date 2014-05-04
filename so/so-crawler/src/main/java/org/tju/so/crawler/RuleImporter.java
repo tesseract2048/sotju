@@ -8,7 +8,6 @@ import org.tju.so.model.crawler.holder.RuleHolder;
 import org.tju.so.model.crawler.holder.SiteConfigHolder;
 import org.tju.so.model.crawler.rule.def.EwebNewsDetailRule;
 import org.tju.so.model.crawler.rule.def.EwebNoticeListRule;
-import org.tju.so.model.crawler.rule.def.EwebSiteConfig;
 import org.tju.so.model.crawler.rule.def.PtSiteConfig;
 import org.tju.so.model.crawler.rule.def.PtTorrentDetailRule;
 import org.tju.so.model.crawler.rule.def.PtTorrentDownloadRule;
@@ -28,7 +27,7 @@ public class RuleImporter {
 
     public void run() {
         siteConfigHolder.clear();
-        siteConfigHolder.put(new EwebSiteConfig());
+        //siteConfigHolder.put(new EwebSiteConfig());
         siteConfigHolder.put(new PtSiteConfig());
 
         ruleHolder.clear();

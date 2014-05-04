@@ -15,6 +15,8 @@ public class PtTorrentDetailRule extends Rule {
 
     private final static String TITLE_PATTERN = ".pagetitle";
 
+    private final static String ID_PATTERN = "bookmark\\((?<id>\\d+),0\\);";
+
     private final static String SIZE_PATTERN = "<b><b>大小：</b></b>(?<size>[^&]+)";
 
     private final static String INFO_PATTERN = "<td class=\"rowhead nowrap\" valign=\"top\" align=\"right\">详细信息</td><td class=\"rowfollow\" valign=\"top\" align=\"left\">(?<info>.+?)</td>";
@@ -34,20 +36,20 @@ public class PtTorrentDetailRule extends Rule {
     public PtTorrentDetailRule() {
         setId("pt_torrent_detail");
         setSiteId("pt");
-        setUrlPattern("http://pt\\.tju\\.edu\\.cn/details\\.php\\?id=(\\d+)(&.+)*");
+        setUrlPattern("http://pt\\.tju\\.edu\\.cn/details\\.php\\?id=(\\d+).*");
         setRefreshRate(86400);
         setExtractors(Arrays.asList(new Extractor[] {
+            new Extractor(PatternType.REGEX, ID_PATTERN).function("id",
+                    new FunctionInvokeChain().append(FunctionType.SET_ID)),
             new Extractor(PatternType.DOM, TITLE_PATTERN).function("text",
                     new FunctionInvokeChain().append(
                             FunctionType.STRIP_AND_STORE, "title")),
             new Extractor(PatternType.REGEX, SIZE_PATTERN).function("size",
                     new FunctionInvokeChain().append(
                             FunctionType.STRIP_AND_STORE, "size")),
-            new Extractor(PatternType.REGEX, INFO_PATTERN).function(
-                    "info",
+            new Extractor(PatternType.REGEX, INFO_PATTERN).function("info",
                     new FunctionInvokeChain().append(FunctionType.HTML_TO_TEXT)
-                            .append(FunctionType.STRIP_AND_STORE, "read",
-                                    "$ret")),
+                            .append(FunctionType.STRIP_AND_STORE, "info")),
             new Extractor(PatternType.DOM, DESCRIPTION_PATTERN).function(
                     "text", new FunctionInvokeChain().append(
                             FunctionType.STRIP_AND_STORE, "description")),
@@ -70,7 +72,7 @@ public class PtTorrentDetailRule extends Rule {
             new Extractor(PatternType.DOM, TORRENT_NAME_PATTERN).function(
                     "href",
                     new FunctionInvokeChain().append(FunctionType.ABSOLUTE_URL)
-                            .append(FunctionType.FETCH, "$ret")).function(
+                            .append(FunctionType.FETCH)).function(
                     "text",
                     new FunctionInvokeChain().append(
                             FunctionType.STRIP_AND_STORE, "torrentName")),

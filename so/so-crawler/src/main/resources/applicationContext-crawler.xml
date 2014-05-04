@@ -36,4 +36,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <bean id="refreshKey" class="java.lang.String">
         <constructor-arg value="${redis.refresh.key}" />
     </bean>
+ 
+    <bean id="workerThreadNumber" class="java.lang.Integer">
+        <constructor-arg value="${worker.thread.number}" />
+    </bean>
 </beans>
