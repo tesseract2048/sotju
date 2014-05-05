@@ -1,5 +1,8 @@
 package org.tju.so.model.crawler.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.tju.so.model.crawler.TaskPriority;
 
 /**
@@ -11,14 +14,25 @@ public class Task {
 
     private String url;
 
+    private Map<String, Object> params;
+
     private TaskPriority priority;
 
-    public Task() {}
+    public Task() {
+        params = new HashMap<String, Object>();
+    }
 
     public Task(String contextId, String url, TaskPriority priority) {
+        this();
         setContextId(contextId);
         setUrl(url);
         setPriority(priority);
+    }
+
+    public Task(String contextId, String url, Map<String, Object> params,
+            TaskPriority priority) {
+        this(contextId, url, priority);
+        setParams(params);
     }
 
     /**
@@ -52,6 +66,21 @@ public class Task {
     }
 
     /**
+     * @return the params
+     */
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    /**
+     * @param params
+     *            the params to set
+     */
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
+
+    /**
      * @return the priority
      */
     public TaskPriority getPriority() {
@@ -72,8 +101,8 @@ public class Task {
      */
     @Override
     public String toString() {
-        return "Task [contextId=" + contextId + ", url=" + url + ", priority="
-                + priority + "]";
+        return "Task [contextId=" + contextId + ", url=" + url + ", params="
+                + params + ", priority=" + priority + "]";
     }
 
 }

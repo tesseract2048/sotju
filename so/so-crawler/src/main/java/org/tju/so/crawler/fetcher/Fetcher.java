@@ -10,6 +10,10 @@ public interface Fetcher {
 
     void init(String url);
 
+    void init(String method, String url, String postData);
+
+    void init(String method, String url, String postDataType, String postData);
+
     void fetch(Map<String, String> requestHeaders) throws IOException;
 
     byte[] getData();

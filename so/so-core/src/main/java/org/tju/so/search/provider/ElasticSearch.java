@@ -43,8 +43,6 @@ import org.tju.so.search.context.ResultItem;
 import org.tju.so.util.Pair;
 import org.tju.so.util.SearchUtil;
 
-import com.google.gson.Gson;
-
 /**
  * @author Tianyi HE <hty0807@gmail.com>
  */
@@ -124,9 +122,8 @@ public class ElasticSearch extends ElasticClientInvoker implements
             ResultItem item = new ResultItem();
             item.setPosition(position++);
             item.setScore(hit.getScore());
-            Map<String, Object> values = hit.getSource();
-            item.setDocBoost((double) values.get(SearchUtil.BOOST_FIELD));
-            values.remove(SearchUtil.BOOST_FIELD);
+            Map<String, Object> values = SearchUtil.unwrapEntity(
+                    hit.getSource(), item);
             item.setEntity(new Entity(schemaHolder.get(hit.getType()),
                     siteHolder.get(hit.getIndex()), hit.getId(), values));
             result.add(item);
@@ -143,42 +140,45 @@ public class ElasticSearch extends ElasticClientInvoker implements
         return new Context(query, result, response.getTookInMillis());
     }
 
+    private boolean indexCompletion(BulkRequestBuilder bulkRequest,
+            Entity entity) {
+        List<Pair<String, String>> completions = SearchUtil
+                .makeCompletions(entity);
+        LOG.debug("Completions: " + completions);
+        for (int i = 0; i < completions.size(); i++) {
+            Pair<String, String> completion = completions.get(i);
+            String completionId = String.format("%s_%s_%s_%d", entity.getSite()
+                    .getId(), entity.getSchema().getId(), entity.getId(), i);
+            XContentBuilder completionSource;
+            try {
+                completionSource = XContentFactory.jsonBuilder().startObject()
+                        .startObject("suggest")
+                        .field("input", completion.getKey())
+                        .startObject("payload")
+                        .field("text", completion.getValue()).endObject()
+                        .endObject().endObject();
+            } catch (IOException e) {
+                LOG.error("Failed to build completion source", e);
+                return false;
+            }
+            bulkRequest.add(client.prepareIndex(SYSTEM_SITE, COMPLETION_SCHEMA,
+                    completionId).setSource(completionSource));
+        }
+        return true;
+    }
+
     @Override
     public boolean index(Entity... entities) {
         BulkRequestBuilder bulkRequest = client.prepareBulk();
         for (Entity entity: entities) {
             LOG.info("Indexing " + entity.getSite().getId() + "/"
                     + entity.getSchema().getId() + "/" + entity.getId() + "...");
-            double boost = SearchUtil.calcuateBoost(entity);
-            entity.getFieldValues().put(SearchUtil.BOOST_FIELD, boost);
-            String document = new Gson().toJson(entity.getFieldValues());
-            entity.getFieldValues().remove(SearchUtil.BOOST_FIELD);
+            String document = SearchUtil.wrapEntity(entity);
             bulkRequest.add(client.prepareIndex(entity.getSite().getId(),
                     entity.getSchema().getId(), entity.getId()).setSource(
                     document));
-            List<Pair<String, String>> completions = SearchUtil
-                    .makeCompletions(entity);
-            LOG.info("Completions: " + completions);
-            for (int i = 0; i < completions.size(); i++) {
-                Pair<String, String> completion = completions.get(i);
-                String completionId = String.format("%s_%s_%s_%d", entity
-                        .getSite().getId(), entity.getSchema().getId(), entity
-                        .getId(), i);
-                XContentBuilder completionSource;
-                try {
-                    completionSource = XContentFactory.jsonBuilder()
-                            .startObject().startObject("suggest")
-                            .field("input", completion.getKey())
-                            .startObject("payload")
-                            .field("text", completion.getValue()).endObject()
-                            .endObject().endObject();
-                } catch (IOException e) {
-                    LOG.error("Failed to build completion source", e);
-                    return false;
-                }
-                bulkRequest.add(client.prepareIndex(SYSTEM_SITE,
-                        COMPLETION_SCHEMA, completionId).setSource(
-                        completionSource));
+            if (!indexCompletion(bulkRequest, entity)) {
+                return false;
             }
         }
 

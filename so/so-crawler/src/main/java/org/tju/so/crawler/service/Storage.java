@@ -97,7 +97,7 @@ public class Storage {
             }
 
         });
-        LOG.info("Refresh time for " + url + " updated to " + time + ".");
+        LOG.debug("Refresh time for " + url + " updated to " + time + ".");
     }
 
     public long getRefresh(final String url) throws Exception {
@@ -146,8 +146,7 @@ public class Storage {
             }
 
         });
-        LOG.info("New task created: " + task.toString());
-
+        LOG.debug("New task created: " + task.toString());
     }
 
     public long currentTime() {

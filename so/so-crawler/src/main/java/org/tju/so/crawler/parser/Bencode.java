@@ -236,6 +236,7 @@ public class Bencode {
         TreeMap result = new TreeMap();
         int readByte;
         char charByte;
+        String key = null;
 
         try {
             readByte = stream.read();
@@ -251,7 +252,6 @@ public class Bencode {
                 // parse the key
                 // keys must be bencoded strings, strings starts with an
                 // identifier specifying length
-                String key;
                 Object value;
                 if (Character.isDigit(charByte)) {
                     key = decodeString(charByte, stream);
@@ -301,7 +301,7 @@ public class Bencode {
         }
 
         catch (Exception ex) {
-            throw new Exception("Error when decoding bencoded dictionary", ex);
+            throw new Exception("Error when decoding bencoded dictionary: " + key, ex);
         }
 
         return result;
@@ -388,7 +388,7 @@ public class Bencode {
                     throw new Exception("Integer ended prematurely?");
                 }
                 // check for non-digits
-                if (!Character.isDigit(charByte)) {
+                if (!Character.isDigit(charByte) && charByte != '-') {
                     throw new Exception(
                             "Non-number data in a bencoded integer?");
                 }

@@ -17,4 +17,13 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
         <constructor-arg value="${cluster.name}" />
     </bean>
 
+    <bean id="clusterMasterHost" class="java.lang.String">
+        <constructor-arg value="${cluster.master.host}" />
+    </bean>
+
+    <bean id="clusterMasterPort" class="java.lang.Integer">
+        <constructor-arg value="${cluster.master.port}" />
+    </bean>
+
+
 </beans>

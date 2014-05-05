@@ -1,12 +1,17 @@
 package org.tju.so.crawler.service;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.tju.so.crawler.fetcher.Fetcher;
 import org.tju.so.crawler.fetcher.HttpFetcher;
 import org.tju.so.crawler.parser.BitTorrentParser;
+import org.tju.so.crawler.parser.JsonParser;
 import org.tju.so.crawler.parser.Parser;
 import org.tju.so.crawler.parser.ReadableContentParser;
 import org.tju.so.model.crawler.data.Context;
@@ -32,6 +38,7 @@ import org.tju.so.model.holder.SiteHolder;
 import org.tju.so.model.schema.Field;
 import org.tju.so.model.schema.FieldType;
 import org.tju.so.search.provider.SearchProvider;
+import org.tju.so.util.ScriptUtil;
 
 import com.google.gson.Gson;
 
@@ -56,6 +63,9 @@ public class TaskExecutor {
     @Autowired
     private SearchProvider searchProvider;
 
+    @Autowired
+    private Scheduler scheduler;
+
     private boolean isDryRun;
 
     /**
@@ -78,9 +88,22 @@ public class TaskExecutor {
         siteHolder.flush();
     }
 
-    private Fetcher getFetcher(String url) {
+    private Fetcher getFetcher(String url, Map<String, Object> params) {
         Fetcher fetcher = new HttpFetcher();
-        fetcher.init(url);
+        if (params.containsKey("method") && params.containsKey("postDataType")
+                && params.containsKey("postData")) {
+            fetcher.init((String) params.get("method"), url,
+                    (String) params.get("postDataType"),
+                    (String) params.get("postData"));
+        } else if (params.containsKey("postDataType")
+                && params.containsKey("postData")) {
+            fetcher.init("POST", url, (String) params.get("postDataType"),
+                    (String) params.get("postData"));
+        } else if (params.containsKey("postData")) {
+            fetcher.init("POST", url, (String) params.get("postData"));
+        } else {
+            fetcher.init(url);
+        }
         return fetcher;
     }
 
@@ -94,8 +117,10 @@ public class TaskExecutor {
             case "text/xml":
             case "text/plain":
             case "application/xml":
-            case "application/json":
                 parser = new ReadableContentParser();
+                break;
+            case "application/json":
+                parser = new JsonParser();
                 break;
             case "application/x-bittorrent":
                 parser = new BitTorrentParser();
@@ -107,22 +132,56 @@ public class TaskExecutor {
     }
 
     private String formatArgs(String args, Rule rule, Context context,
-            String baseUrl, String groupName, Object value, String ret) {
-        args = args.replace("$name", "" + groupName);
-        args = args.replace("$val", "" + value);
-
-        args = args.replace("$ruleId", "" + rule.getId());
-        args = args.replace("$siteId", "" + rule.getSiteId());
-
-        args = args.replace("$c_id", "" + context.getId());
-        args = args.replace("$c_contextId", "" + context.getContextId());
-        args = args.replace("$c_schemaId", "" + context.getSchemaId());
-        args = args.replace("$c_siteId", "" + context.getSiteId());
-
-        args = args.replace("$url", "" + baseUrl);
-        args = args.replace("$ret", "" + ret);
-
+            String baseUrl, String groupName, Object value, Object ret) {
+        Map<String, Object> vars = getVars(rule, context, baseUrl, groupName,
+                value, ret);
+        for (Map.Entry<String, Object> var: vars.entrySet()) {
+            args = args.replace("$" + var.getKey(), "" + var.getValue());
+        }
         return args;
+    }
+
+    private Object execScript(Rule rule, Context context, String baseUrl,
+            String groupName, Object value, Object ret, String script) {
+        String eval = "";
+        Map<String, Object> vars = getVars(rule, context, baseUrl, groupName,
+                value, ret);
+        for (Map.Entry<String, Object> var: vars.entrySet()) {
+            eval += "var " + var.getKey() + " = "
+                    + new Gson().toJson(var.getValue()) + ";\n";
+        }
+        eval += script;
+        return ScriptUtil.eval(eval);
+    }
+
+    private Map<String, Object> getVars(Rule rule, Context context,
+            String baseUrl, String groupName, Object value, Object ret) {
+        Map<String, Object> vars = new HashMap<String, Object>();
+
+        vars.put("name", groupName);
+        vars.put("val", value);
+
+        vars.put("ruleId", rule.getId());
+        vars.put("siteId", rule.getSiteId());
+
+        vars.put("c_id", context.getId());
+        vars.put("c_contextId", context.getContextId());
+        vars.put("c_schemaId", context.getSchemaId());
+        vars.put("c_siteId", context.getSiteId());
+
+        vars.put("url", baseUrl);
+        vars.put("ret", ret);
+
+        try {
+            List<NameValuePair> params = URLEncodedUtils.parse(
+                    new URI(baseUrl), "UTF-8");
+            for (NameValuePair param: params) {
+                vars.put("q_" + param.getName(), param.getValue());
+            }
+        } catch (URISyntaxException e) {
+            LOG.warn("Failed to parse url: " + baseUrl, e);
+        }
+        return vars;
     }
 
     private Entity makeEntity(Context context) throws Exception {
@@ -170,7 +229,11 @@ public class TaskExecutor {
 
     private static String formatDate(String formatString, String input) {
         DateTimeFormatter fmt = DateTimeFormat.forPattern(formatString);
-        return String.valueOf(fmt.parseDateTime(input.trim()).getMillis());
+        try {
+            return String.valueOf(fmt.parseDateTime(input.trim()).getMillis());
+        } catch (Exception e) {
+            return "0";
+        }
     }
 
     private String mergeUrls(String baseUrl, String href) throws Exception {
@@ -191,8 +254,8 @@ public class TaskExecutor {
         if (value instanceof Collection || value instanceof Map) {
             value = new Gson().toJson(value);
         }
-        String ret = "" + value;
-        LOG.info("Invoking extractor for group " + groupName + ", value is "
+        Object ret = value;
+        LOG.debug("Invoking extractor for group " + groupName + ", value is "
                 + value);
         for (FunctionInvoke invoke: chain.getFunctions()) {
             FunctionType type = invoke.getType();
@@ -211,45 +274,51 @@ public class TaskExecutor {
                     break;
                 case SET_SCHEMA_ID:
                     if (op1 == null)
-                        op1 = ret;
+                        op1 = "" + ret;
                     context.setSchemaId(op1);
-                    LOG.info("Context schemaId set to " + op1);
+                    LOG.debug("Context schemaId set to " + op1);
                     break;
                 case SET_SITE_ID:
                     if (op1 == null)
-                        op1 = ret;
+                        op1 = "" + ret;
                     context.setSiteId(op1);
-                    LOG.info("Context siteId set to " + op1);
+                    LOG.debug("Context siteId set to " + op1);
                     break;
                 case SET_ID:
                     if (op1 == null)
-                        op1 = ret;
+                        op1 = "" + ret;
                     context.setId(op1);
-                    LOG.info("Context id set to " + op1);
+                    LOG.debug("Context id set to " + op1);
                     break;
                 case ABSOLUTE_URL:
                     if (op1 == null && op2 == null) {
                         op1 = baseUrl;
-                        op2 = ret;
+                        op2 = "" + ret;
                     }
                     ret = mergeUrls(op1, op2);
                     break;
                 case FETCH:
                     if (op1 == null)
-                        op1 = ret;
-                    LOG.info("Fetch later: " + op1);
-                    context.getNewTasks().add(
-                            new Task(context.getContextId(), op1, task
-                                    .getPriority()));
+                        op1 = "" + ret;
+                    Task newTask = new Task(context.getContextId(), op1,
+                            task.getPriority());
+                    if (op2 != null) {
+                        newTask.getParams().put("postData", op2);
+                        LOG.debug("Fetch later: " + op1 + " with post data: "
+                                + op2);
+                    } else {
+                        LOG.debug("Fetch later: " + op1);
+                    }
+                    context.getNewTasks().add(newTask);
                     break;
                 case STRIP_AND_STORE:
                     if (op2 == null)
-                        op2 = ret;
+                        op2 = "" + ret;
                     op2 = op2.trim();
                 case STORE:
                     if (op2 == null)
-                        op2 = ret;
-                    LOG.info("Store [" + op1 + "]: " + op2);
+                        op2 = "" + ret;
+                    LOG.debug("Store [" + op1 + "]: " + op2);
                     context.getParsedValues().put(op1, op2);
                     break;
                 case INDEX:
@@ -266,12 +335,12 @@ public class TaskExecutor {
                     break;
                 case FORMAT_DATE:
                     if (op2 == null)
-                        op2 = ret;
+                        op2 = "" + ret;
                     ret = formatDate(op1, op2);
                     break;
                 case STRIP:
                     if (op1 == null)
-                        op1 = ret;
+                        op1 = "" + ret;
                     ret = op1.trim();
                     break;
                 case FINISH:
@@ -279,8 +348,12 @@ public class TaskExecutor {
                     break;
                 case HTML_TO_TEXT:
                     if (op1 == null)
-                        op1 = ret;
+                        op1 = "" + ret;
                     ret = Jsoup.parseBodyFragment(op1).text();
+                    break;
+                case SCRIPT:
+                    ret = execScript(rule, context, baseUrl, groupName, value,
+                            ret, op1);
                     break;
             }
         }
@@ -321,7 +394,7 @@ public class TaskExecutor {
 
         /* prepare context */
         String contextId = task.getContextId();
-        LOG.info("Loading context " + contextId + "...");
+        LOG.debug("Loading context " + contextId + "...");
         Context context;
         if (isDryRun)
             context = new Context();
@@ -335,7 +408,7 @@ public class TaskExecutor {
 
         try {
             /* fetch remote data */
-            Fetcher fetcher = getFetcher(url);
+            Fetcher fetcher = getFetcher(url, task.getParams());
             if (fetcher == null) {
                 throw new Exception("No fetcher found for " + url);
             }
@@ -351,7 +424,7 @@ public class TaskExecutor {
             LOG.info("Parsing " + fetcher.getMimeType());
 
             /* extract values */
-            LOG.info("Invoking " + rule.getExtractors().size()
+            LOG.debug("Invoking " + rule.getExtractors().size()
                     + " extractor(s)...");
             for (Extractor extractor: rule.getExtractors()) {
                 List<Map<String, Object>> mchs = parser.extract(extractor);
@@ -361,7 +434,7 @@ public class TaskExecutor {
                             + extractor.getPattern());
                     continue;
                 }
-                LOG.info(mchs.size() + " matches found for extractor: "
+                LOG.debug(mchs.size() + " matches found for extractor: "
                         + extractor.getType() + ", " + extractor.getPattern());
                 for (Map<String, Object> groups: mchs) {
                     relatedContexts.addAll(invokeExtractor(task, rule, context,
@@ -371,13 +444,14 @@ public class TaskExecutor {
         } catch (Exception e) {
             /* mark as finished so that current context would be removed later */
             context.setFinished(true);
+            throw e;
         } finally {
             /* save contexts */
             if (!isDryRun) {
                 LOG.info("Saving " + relatedContexts.size()
                         + " related contexts...");
                 for (Context rContext: relatedContexts) {
-                    LOG.info("Post-processing context "
+                    LOG.debug("Post-processing context "
                             + rContext.getContextId() + "...");
                     storage.putContext(rContext);
                     if (rContext.isIndexing()) {
@@ -387,7 +461,17 @@ public class TaskExecutor {
                         finishContext(rContext, true);
                     }
                     for (Task newTask: rContext.getNewTasks()) {
-                        storage.pushTask(newTask);
+                        if (scheduler.scheduleNewTask(newTask)) {
+                            rContext.setScheduled(true);
+                        }
+                    }
+                    /*
+                     * new context was created but no task has been scheduled,
+                     * in this case we are removing it
+                     */
+                    if (rContext != context && !rContext.isScheduled()) {
+                        LOG.debug("Context " + rContext.getContextId() + " is died.");
+                        rContext.setFinished(true);
                     }
                     if (rContext.isFinished())
                         storage.removeContext(rContext.getContextId());

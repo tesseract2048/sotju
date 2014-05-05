@@ -25,15 +25,38 @@ public class ReadableContentParser implements Parser {
 
     private Document dom = null;
 
-    @Override
-    public void init(String mimeType, byte[] data) {
-        String charset = "UTF-8";
-        if (mimeType.contains("charset=")) {
-            charset = mimeType.substring(mimeType.indexOf("charset=") + 8);
+    private String extractCharsetAttribute(String input) {
+        String charset = null;
+        if (input.contains("charset=")) {
+            charset = input.substring(input.indexOf("charset=") + 8);
             if (charset.contains(";"))
                 charset = charset.substring(0, charset.indexOf(";"));
+            if (charset.contains("'"))
+                charset = charset.substring(0, charset.indexOf("'"));
+            if (charset.contains("\""))
+                charset = charset.substring(0, charset.indexOf("\""));
+            if (charset.contains(" "))
+                charset = charset.substring(0, charset.indexOf(" "));
         }
-        LOG.info("Parsing readable content with " + charset + " charset...");
+        return charset;
+    }
+
+    @Override
+    public void init(String mimeType, byte[] data) {
+        String charset = null;
+        charset = extractCharsetAttribute(mimeType);
+        if (charset == null) {
+            // a simple chardet is performed
+            try {
+                content = IOUtils.toString(data, "ASCII");
+                charset = extractCharsetAttribute(content);
+            } catch (IOException e) {}
+        }
+        if (charset == null) {
+            charset = "UTF-8";
+            LOG.warn("Mimetype does not contain a valid charset as well as content, continuing with UTF-8.");
+        }
+        LOG.debug("Parsing readable content with " + charset + " charset...");
         try {
             content = IOUtils.toString(data, charset);
         } catch (IOException e) {
@@ -53,7 +76,7 @@ public class ReadableContentParser implements Parser {
                 if (dom == null)
                     dom = Jsoup.parse(content, "");
                 return ParserUtil.extractWithJsoup(dom, pattern);
-            case WHOLE_TEXT:
+            case WHOLE:
                 List<Map<String, Object>> mchs = new ArrayList<Map<String, Object>>();
                 Map<String, Object> groups = new HashMap<String, Object>();
                 groups.put("text", content);

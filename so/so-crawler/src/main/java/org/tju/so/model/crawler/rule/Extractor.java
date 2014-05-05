@@ -15,11 +15,11 @@ public class Extractor {
     public final static String INVOKE_FINISH = "_finish";
 
     public enum PatternType {
-        REGEX, DOM, WHOLE_TEXT, SCRIPT
+        REGEX, DOM, WHOLE, SCRIPT
     }
 
     public enum FunctionType {
-        NEW_CONTEXT, SET_SCHEMA_ID, SET_SITE_ID, SET_ID, ABSOLUTE_URL, FETCH, STORE, INDEX, DELETE, INDEX_LATER, DELETE_LATER, FORMAT_DATE, STRIP, STRIP_AND_STORE, FINISH, HTML_TO_TEXT
+        NEW_CONTEXT, SET_SCHEMA_ID, SET_SITE_ID, SET_ID, ABSOLUTE_URL, FETCH, STORE, INDEX, DELETE, INDEX_LATER, DELETE_LATER, FORMAT_DATE, STRIP, STRIP_AND_STORE, FINISH, HTML_TO_TEXT, SCRIPT
     }
 
     public static class FunctionInvoke {

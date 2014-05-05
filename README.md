@@ -14,7 +14,7 @@ Search engine based on Elastsearch, aiming to index and search resources within 
 
 * so: sotju projects
 * so/so-core: core package, including models, schema definations and search adapters.
-* so/so-crawler: crawler package, including rules, scheduler, worker, fethcers, parsers and extractors.
+* so/so-crawler: crawler package, including rules, scheduler, worker, fetchers, parsers and extractors.
 * so/so-node: node package, a wrapper for elastsearch data node.
 * so/so-dispatcher: dispatcher package, provides a RESTful API for accessing search engine.
 * analysis-ik: a modified version of elasticsearch-analysis-ik

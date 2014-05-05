@@ -26,7 +26,7 @@ public class BitTorrentParser implements Parser {
             LOG.info("Torrent parsed as bencode successfully.");
         } catch (Exception e) {
             torrent = new HashMap<String, Object>();
-            LOG.error("Failed to parse bencode.");
+            LOG.error("Failed to parse bencode.", e);
         }
     }
 

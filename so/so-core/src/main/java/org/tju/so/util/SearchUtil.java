@@ -15,6 +15,7 @@ import org.tju.so.model.entity.Entity;
 import org.tju.so.model.schema.Field;
 import org.tju.so.model.schema.FieldType;
 import org.tju.so.model.schema.Schema;
+import org.tju.so.search.context.ResultItem;
 
 import com.google.gson.Gson;
 
@@ -135,17 +136,42 @@ public class SearchUtil {
             return 1.0f;
         String docJson = new Gson().toJson(entity.getFieldValues());
         String script = "var doc = " + docJson + ";\n" + expr;
+        /* calculate per document boost */
         double boost = (double) ScriptUtil.eval(script);
         if (Double.isInfinite(boost) || Double.isNaN(boost)
                 || boost < BOOST_MIN)
             boost = BOOST_MIN;
+        /* taking per schema & per site boost factor */
+        boost *= schema.getRankFactor() * entity.getSite().getRankingFactors();
         return boost;
     }
 
     public static QueryBuilder buildQuery(String query) {
+        /*
+         * FIXME: actually elasticsearch provided this ScoreFunctionBuilder
+         * already in 2.0, but script overhead is inevitable for now
+         */
         return QueryBuilders.functionScoreQuery(
                 QueryBuilders.queryString(query)).add(
                 ScoreFunctionBuilders.scriptFunction("_score * doc['"
                         + SearchUtil.BOOST_FIELD + "'].value"));
+    }
+
+    public static String wrapEntity(Entity entity) {
+        double boost = calcuateBoost(entity);
+        entity.getFieldValues().put(SearchUtil.BOOST_FIELD, boost);
+        try {
+            String document = new Gson().toJson(entity.getFieldValues());
+            return document;
+        } finally {
+            entity.getFieldValues().remove(SearchUtil.BOOST_FIELD);
+        }
+    }
+
+    public static Map<String, Object> unwrapEntity(Map<String, Object> source,
+            ResultItem resultItem) {
+        resultItem.setDocBoost((double) source.get(SearchUtil.BOOST_FIELD));
+        source.remove(SearchUtil.BOOST_FIELD);
+        return source;
     }
 }

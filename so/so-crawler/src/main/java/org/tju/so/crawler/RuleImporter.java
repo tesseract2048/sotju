@@ -6,12 +6,20 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import org.tju.so.model.crawler.holder.RuleHolder;
 import org.tju.so.model.crawler.holder.SiteConfigHolder;
+import org.tju.so.model.crawler.rule.def.EwebInfoListRule;
 import org.tju.so.model.crawler.rule.def.EwebNewsDetailRule;
-import org.tju.so.model.crawler.rule.def.EwebNoticeListRule;
+import org.tju.so.model.crawler.rule.def.EwebNewsListRule;
+import org.tju.so.model.crawler.rule.def.EwebSiteConfig;
 import org.tju.so.model.crawler.rule.def.PtSiteConfig;
 import org.tju.so.model.crawler.rule.def.PtTorrentDetailRule;
 import org.tju.so.model.crawler.rule.def.PtTorrentDownloadRule;
 import org.tju.so.model.crawler.rule.def.PtTorrentListRule;
+import org.tju.so.model.crawler.rule.def.SeeworldMoviePageRule;
+import org.tju.so.model.crawler.rule.def.SeeworldSiteConfig;
+import org.tju.so.model.crawler.rule.def.TjunewsInfoClickRule;
+import org.tju.so.model.crawler.rule.def.TjunewsInfoDetailRule;
+import org.tju.so.model.crawler.rule.def.TjunewsInfoListRule;
+import org.tju.so.model.crawler.rule.def.TjunewsSiteConfig;
 
 /**
  * @author Tianyi HE <hty0807@gmail.com>
@@ -27,15 +35,22 @@ public class RuleImporter {
 
     public void run() {
         siteConfigHolder.clear();
-        //siteConfigHolder.put(new EwebSiteConfig());
+        siteConfigHolder.put(new EwebSiteConfig());
         siteConfigHolder.put(new PtSiteConfig());
+        siteConfigHolder.put(new TjunewsSiteConfig());
+        siteConfigHolder.put(new SeeworldSiteConfig());
 
         ruleHolder.clear();
-        ruleHolder.put(new EwebNoticeListRule());
+        ruleHolder.put(new EwebNewsListRule());
         ruleHolder.put(new EwebNewsDetailRule());
+        ruleHolder.put(new EwebInfoListRule());
         ruleHolder.put(new PtTorrentListRule());
         ruleHolder.put(new PtTorrentDetailRule());
         ruleHolder.put(new PtTorrentDownloadRule());
+        ruleHolder.put(new TjunewsInfoListRule());
+        ruleHolder.put(new TjunewsInfoDetailRule());
+        ruleHolder.put(new TjunewsInfoClickRule());
+        ruleHolder.put(new SeeworldMoviePageRule());
     }
 
     public static void main(String[] args) {

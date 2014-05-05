@@ -29,10 +29,11 @@ public class Torrent extends Schema {
             new Field("files", FieldType.ARRAY, Arrays.asList(new Field[] {
                 new Field("name", FieldType.STRING, true, true, true),
                 new Field("length", FieldType.FLOAT, false, false)
-            }))
+            })),
+            new Field("url", FieldType.STRING, false, false)
         }));
         setRankFactor(1.0f);
-        setDocumentRankExpr("Math.log(parseInt(doc.download) + parseInt(doc.seeder)*1.8 + parseInt(doc.leecher)*1.4)");
+        setDocumentRankExpr("Math.sqrt(Math.log(parseInt(doc.download) + parseInt(doc.seeder)*1.8 + parseInt(doc.leecher)*1.4 + 1))");
     }
 
 }

@@ -1,9 +1,7 @@
 package org.tju.so.crawler.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -14,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tju.so.model.crawler.TaskPriority;
 import org.tju.so.model.crawler.data.Task;
-import org.tju.so.model.crawler.holder.RuleHolder;
 import org.tju.so.model.crawler.rule.Rule;
 
 /**
@@ -25,32 +22,28 @@ public class Worker {
 
     private static final Logger LOG = LoggerFactory.getLogger(Worker.class);
 
+    private static final Integer IDLE_WAIT = 1000;
+
+    private static final Integer BUSY_WAIT = 64;
+
     @Autowired
     private Storage storage;
 
     @Autowired
-    private RuleHolder ruleHolder;
+    private TaskExecutor taskExecutor;
 
     @Autowired
-    private TaskExecutor taskExecutor;
+    private Scheduler scheduler;
 
     @Resource
     private int workerThreadNumber;
 
     private volatile boolean isRunning;
 
-    private Map<String, Rule> rules;
-
     private List<WorkerThread> threads;
 
     @PostConstruct
     public void init() {
-        rules = new HashMap<String, Rule>();
-        for (Rule rule: ruleHolder.getAll()) {
-            String pattern = rule.getUrlPattern();
-            rules.put(pattern, rule);
-            LOG.info("Rule loaded for pattern " + pattern);
-        }
         threads = new ArrayList<WorkerThread>();
         for (int i = 0; i < workerThreadNumber; i++) {
             threads.add(new WorkerThread());
@@ -58,46 +51,17 @@ public class Worker {
         LOG.info(threads.size() + " worker thread(s) created.");
     }
 
-    private Rule getRule(String url) {
-        for (Map.Entry<String, Rule> entry: rules.entrySet()) {
-            if (url.matches(entry.getKey()))
-                return entry.getValue();
-        }
-        return null;
-    }
-
     public void reload() {
-        ruleHolder.flush();
         init();
-    }
-
-    private boolean checkRefresh(String url, int refreshRate) throws Exception {
-        long lastRefreshTime = storage.getRefresh(url);
-        long currentTime = storage.currentTime();
-        if (lastRefreshTime > 0 && refreshRate == Rule.NEVER_REFRESH)
-            return false;
-        if (currentTime - lastRefreshTime < refreshRate)
-            return false;
-        storage.putRefresh(url, currentTime);
-        return true;
     }
 
     private void runTask(Task task) throws Exception {
         String url = task.getUrl();
-        Rule rule = getRule(url);
-        if (rule == null) {
-            storage.removeContext(task.getContextId());
-            throw new Exception("No rule found for: " + url);
-        }
-        if (!checkRefresh(url, rule.getRefreshRate())) {
-            storage.removeContext(task.getContextId());
-            LOG.info("Refresh limit exceeded: " + url);
-            return;
-        }
+        Rule rule = scheduler.getRule(url);
         taskExecutor.executeTask(rule, task);
     }
 
-    public void doWork() throws Exception {
+    public boolean doWork() throws Exception {
         Task task = null;
         task = storage.popTask(TaskPriority.HIGHER);
         if (task == null)
@@ -112,19 +76,24 @@ public class Worker {
             } catch (Exception e) {
                 LOG.warn("Error occured during task execution", e);
             }
+            return true;
+        } else {
+            return false;
         }
     }
 
     private class WorkerThread extends Thread {
         public void run() {
             while (isRunning) {
+                int waitMillis = IDLE_WAIT;
                 try {
-                    doWork();
+                    if (doWork())
+                        waitMillis = BUSY_WAIT;
                 } catch (Exception e) {
-                    LOG.error("Operation failure with storage", e);
+                    LOG.error("Storage operation failed", e);
                 }
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(waitMillis);
                 } catch (InterruptedException e) {
                     return;
                 }

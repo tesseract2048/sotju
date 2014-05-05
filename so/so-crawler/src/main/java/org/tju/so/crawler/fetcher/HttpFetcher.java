@@ -2,8 +2,9 @@ package org.tju.so.crawler.fetcher;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,25 +22,59 @@ public class HttpFetcher implements Fetcher {
 
     private String url;
 
+    private String method;
+
+    private String postDataType;
+
+    private String postData;
+
     private Map<String, String> responseHeaders;
 
     private byte[] content;
 
     @Override
     public void init(String url) {
+        init("GET", url, null, null);
+    }
+
+    @Override
+    public void init(String method, String url, String postData) {
+        init("POST", url, "application/x-www-form-urlencoded", postData);
+    }
+
+    @Override
+    public void init(String method, String url, String postDataType,
+            String postData) {
+        this.method = method;
         this.url = url;
+        this.postDataType = postDataType;
+        this.postData = postData;
     }
 
     @Override
     public void fetch(Map<String, String> requestHeaders) throws IOException {
         URL target = new URL(url);
-        URLConnection connection = target.openConnection();
+        HttpURLConnection connection = (HttpURLConnection) target
+                .openConnection();
         connection.setRequestProperty("User-Agent", USER_AGENT);
         for (Map.Entry<String, String> entry: requestHeaders.entrySet()) {
             connection.setRequestProperty(entry.getKey(), entry.getValue());
         }
         connection.setConnectTimeout(TIMEOUT);
         connection.setReadTimeout(TIMEOUT);
+        connection.setRequestMethod(method);
+        if (postDataType != null) {
+            connection.setRequestProperty("Content-Type", postDataType);
+        }
+        if (postData != null) {
+            connection.setDoOutput(true);
+            OutputStream output = connection.getOutputStream();
+            try {
+                IOUtils.write(postData, output);
+            } finally {
+                IOUtils.closeQuietly(output);
+            }
+        }
         InputStream input = connection.getInputStream();
         try {
             content = IOUtils.toByteArray(input);

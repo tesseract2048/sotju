@@ -29,6 +29,8 @@ public class Context {
 
     private transient List<Task> newTasks;
 
+    private transient boolean isScheduled;
+
     public Context() {
         setContextId(UUID.randomUUID().toString());
         parsedValues = new HashMap<String, Object>();
@@ -179,6 +181,21 @@ public class Context {
      */
     public void setNewTasks(List<Task> newTasks) {
         this.newTasks = newTasks;
+    }
+
+    /**
+     * @return the isScheduled
+     */
+    public boolean isScheduled() {
+        return isScheduled;
+    }
+
+    /**
+     * @param isScheduled
+     *            the isScheduled to set
+     */
+    public void setScheduled(boolean isScheduled) {
+        this.isScheduled = isScheduled;
     }
 
 }

@@ -21,10 +21,11 @@ public class Article extends Schema {
             new Field("author", FieldType.STRING, true, false, true),
             new Field("column", FieldType.STRING, false, false, true),
             new Field("read", FieldType.INTEGER, false, false),
-            new Field("content", FieldType.STRING, true, true)
+            new Field("content", FieldType.STRING, true, true),
+            new Field("url", FieldType.STRING, false, false)
         }));
         setRankFactor(1.0f);
-        setDocumentRankExpr("Math.log(parseInt(doc.read))");
+        setDocumentRankExpr("Math.sqrt(Math.log(parseInt(doc.read)+1))");
     }
 
 }

@@ -37,7 +37,7 @@ public class PtTorrentDetailRule extends Rule {
         setId("pt_torrent_detail");
         setSiteId("pt");
         setUrlPattern("http://pt\\.tju\\.edu\\.cn/details\\.php\\?id=(\\d+).*");
-        setRefreshRate(86400);
+        setRefreshRate(86400*5);
         setExtractors(Arrays.asList(new Extractor[] {
             new Extractor(PatternType.REGEX, ID_PATTERN).function("id",
                     new FunctionInvokeChain().append(FunctionType.SET_ID)),

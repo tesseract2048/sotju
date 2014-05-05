@@ -23,7 +23,7 @@ public class EwebNewsDetailRule extends Rule {
         setId("eweb_news_detail");
         setSiteId("eweb");
         setUrlPattern("http://e\\.tju\\.edu\\.cn/toModule\\.do\\?prefix=/News&page=/newsDetail\\.do\\?infoid=(\\d+)");
-        setRefreshRate(86400 * 5);
+        setRefreshRate(86400 * 7);
         setExtractors(Arrays.asList(new Extractor[] {
             new Extractor(PatternType.DOM, CONTENT_PATTERN).function("text",
                     new FunctionInvokeChain().append(
