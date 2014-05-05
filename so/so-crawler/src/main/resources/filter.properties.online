@@ -1,0 +1,5 @@
+redis.host = 127.0.0.1
+redis.queue.key.format = sotju_crawler_task_%s
+redis.context.key = sotju_crawler_context
+redis.refresh.key = sotju_crawler_refresh
+worker.thread.number = 10

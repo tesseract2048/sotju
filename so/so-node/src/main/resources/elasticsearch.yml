@@ -144,7 +144,7 @@ node.data: true
 
 # Path to directory where to store index data allocated for this node.
 #
-path.data: /tmp/sotju/data
+path.data: ${node.path}/data
 #
 # Can optionally include more than one location, causing data to be striped across
 # the locations (a la RAID 0) on a file level, favouring locations with most free
@@ -154,15 +154,15 @@ path.data: /tmp/sotju/data
 
 # Path to temporary files:
 #
-path.work: /path/sotju/work
+path.work: ${node.path}/work
 
 # Path to log files:
 #
-path.logs: /tmp/sotju/logs
+path.logs: ${node.path}/logs
 
 # Path to where plugins are installed:
 #
-# path.plugins: /path/to/plugins
+path.plugins: ${node.path}/plugins
 
 
 #################################### Plugin ###################################

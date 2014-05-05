@@ -24,7 +24,7 @@ public class TjunewsInfoDetailRule extends Rule {
     public TjunewsInfoDetailRule() {
         setId("tjunews_info_detail");
         setSiteId("tjunews");
-        setUrlPattern("http://www\\.tju\\.edu\\.cn/newscenter/([a-zA-Z]+)/(\\d+)/([a-zA-Z_0-9]*).htm");
+        setUrlPattern("http://www\\.tju\\.edu\\.cn/newscenter/([_a-zA-Z]+)/(\\d+)/([a-zA-Z_0-9]*).htm");
         setRefreshRate(86400 * 30);
         setExtractors(Arrays.asList(new Extractor[] {
             new Extractor(PatternType.REGEX, ID_PATTERN).function("id",

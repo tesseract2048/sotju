@@ -1,3 +1,3 @@
-cluster.name = sotju_debug
+cluster.name = sotju
 cluster.master.host = localhost
 cluster.master.port = 9300

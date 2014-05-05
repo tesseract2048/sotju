@@ -1,0 +1,2 @@
+cluster.name = sotju
+node.path = /app/sotju

@@ -1,1 +1,2 @@
-cluster.name = sotju
+cluster.name = sotju_debug
+node.path = /tmp/sotju
