@@ -24,7 +24,7 @@ Search engine based on Elastsearch, aiming to index and search resources within 
 * A human interface for searching (say homepage), and its optimization for mobile devices
 * Query log analyzers: hot query, related query, etc.
 * RESTful APIs for crawler (push, etc.)
-* More schemas: Service, Organization, Software, Movie, Music, (Page, ) etc.
-* More sites: Seeworld, Twt, TjuNewsCenter, etc.
+* More schemas: Service, Organization, Software, Music, (Page, ) etc.
+* More sites: Twt, etc.
 * A human interface for manual operations
 * ... To be discovered ...
