@@ -27,7 +27,7 @@ public class Torrent extends Schema {
             new Field("leecher", FieldType.INTEGER, false, false),
             new Field("torrentName", FieldType.STRING, true, true, true),
             new Field("files", FieldType.ARRAY, Arrays.asList(new Field[] {
-                new Field("name", FieldType.STRING, true, true, true),
+                new Field("name", FieldType.STRING, true, true),
                 new Field("length", FieldType.FLOAT, false, false)
             })),
             new Field("url", FieldType.STRING, false, false)

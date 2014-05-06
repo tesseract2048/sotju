@@ -117,7 +117,8 @@ public class SearchUtil {
         XContentBuilder mapping = XContentFactory.jsonBuilder().startObject()
                 .startObject(schema.getId()).startObject("_source")
                 .field("enabled", true).endObject().startObject("_all")
-                .field("enabled", true).endObject().startObject("properties");
+                .field("enabled", true).field("index", "analyzed")
+                .field("analyzer", "ik").endObject().startObject("properties");
         mapping.startObject(BOOST_FIELD);
         mapping.field("type", "double");
         mapping.field("index", "not_analyzed");
@@ -152,7 +153,7 @@ public class SearchUtil {
          * already in 2.0, but script overhead is inevitable for now
          */
         return QueryBuilders.functionScoreQuery(
-                QueryBuilders.queryString(query)).add(
+                QueryBuilders.queryString(query).analyzer("ik")).add(
                 ScoreFunctionBuilders.scriptFunction("_score * doc['"
                         + SearchUtil.BOOST_FIELD + "'].value"));
     }

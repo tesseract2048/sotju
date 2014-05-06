@@ -375,3 +375,5 @@ index:
       ik_smart:
           type: ik
           use_smart: true
+      default:
+          type: ik
