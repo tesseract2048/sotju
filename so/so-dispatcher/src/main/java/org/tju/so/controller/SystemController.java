@@ -15,9 +15,9 @@ import com.google.gson.Gson;
 
 @Controller
 @RequestMapping(value = {
-    "/model"
+    "/api/system"
 })
-public class ModelController {
+public class SystemController {
 
     @Autowired
     private SchemaHolder schemaHolder;

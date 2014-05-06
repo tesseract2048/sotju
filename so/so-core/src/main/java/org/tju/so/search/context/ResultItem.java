@@ -79,4 +79,14 @@ public class ResultItem {
         this.docBoost = docBoost;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ResultItem [entity=" + entity + ", position=" + position
+                + ", score=" + score + ", docBoost=" + docBoost + "]";
+    }
+
 }

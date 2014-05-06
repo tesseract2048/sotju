@@ -3,10 +3,6 @@ package org.tju.so.search.context;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tju.so.model.ObjectHelper;
-import org.tju.so.model.schema.Schema;
-import org.tju.so.model.site.Site;
-
 /**
  * @author Tianyi HE <hty0807@gmail.com>
  */
@@ -14,9 +10,9 @@ public class Query {
 
     private String query;
 
-    private transient List<Schema> schemas;
+    private String[] schemaIds;
 
-    private transient List<Site> sites;
+    private String[] siteIds;
 
     private List<QueryFilter> filters;
 
@@ -25,8 +21,8 @@ public class Query {
     private int limit;
 
     public Query() {
-        schemas = new ArrayList<Schema>();
-        sites = new ArrayList<Site>();
+        schemaIds = new String[0];
+        siteIds = new String[0];
         filters = new ArrayList<QueryFilter>();
         start = 0;
         limit = 10;
@@ -53,33 +49,33 @@ public class Query {
     }
 
     /**
-     * @return the schemas
+     * @return the schemaIds
      */
-    public List<Schema> getSchemas() {
-        return schemas;
+    public String[] getSchemaIds() {
+        return schemaIds;
     }
 
     /**
-     * @param schemas
-     *            the schemas to set
+     * @param schemaIds
+     *            the schemaIds to set
      */
-    public void setSchemas(List<Schema> schemas) {
-        this.schemas = schemas;
+    public void setSchemaIds(String[] schemaIds) {
+        this.schemaIds = schemaIds;
     }
 
     /**
-     * @return the sites
+     * @return the siteIds
      */
-    public List<Site> getSites() {
-        return sites;
+    public String[] getSiteIds() {
+        return siteIds;
     }
 
     /**
-     * @param sites
-     *            the sites to set
+     * @param siteIds
+     *            the siteIds to set
      */
-    public void setSites(List<Site> sites) {
-        this.sites = sites;
+    public void setSiteIds(String[] siteIds) {
+        this.siteIds = siteIds;
     }
 
     /**
@@ -133,10 +129,9 @@ public class Query {
      */
     @Override
     public String toString() {
-        return "Query [query=" + query + ", schemas="
-                + ObjectHelper.extractIds(schemas) + ", sites="
-                + ObjectHelper.extractIds(sites) + ", filters=" + filters
-                + ", start=" + start + ", limit=" + limit + "]";
+        return "Query [query=" + query + ", schemaIds=" + schemaIds
+                + ", siteIds=" + siteIds + ", filters=" + filters + ", start="
+                + start + ", limit=" + limit + "]";
     }
 
 }

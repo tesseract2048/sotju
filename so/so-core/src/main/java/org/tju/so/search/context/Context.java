@@ -11,14 +11,18 @@ public class Context {
 
     private List<ResultItem> result;
 
-    private float queryTime;
+    private long total;
+
+    private long queryTook;
 
     public Context() {}
 
-    public Context(Query query, List<ResultItem> result, float queryTime) {
+    public Context(Query query, List<ResultItem> result, long total,
+            long queryTook) {
         this.query = query;
         this.result = result;
-        this.queryTime = queryTime;
+        this.total = total;
+        this.queryTook = queryTook;
     }
 
     /**
@@ -52,18 +56,43 @@ public class Context {
     }
 
     /**
-     * @return the queryTime
+     * @return the total
      */
-    public float getQueryTime() {
-        return queryTime;
+    public long getTotal() {
+        return total;
     }
 
     /**
-     * @param queryTime
-     *            the queryTime to set
+     * @param total
+     *            the total to set
      */
-    public void setQueryTime(float queryTime) {
-        this.queryTime = queryTime;
+    public void setTotal(long total) {
+        this.total = total;
+    }
+
+    /**
+     * @return the queryTook
+     */
+    public long getQueryTook() {
+        return queryTook;
+    }
+
+    /**
+     * @param queryTook
+     *            the queryTook to set
+     */
+    public void setQueryTook(long queryTook) {
+        this.queryTook = queryTook;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Context [query=" + query + ", result=" + result + ", total="
+                + total + ", queryTook=" + queryTook + "]";
     }
 
 }

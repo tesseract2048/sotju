@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 
 @Controller
 @RequestMapping(value = {
-    "/"
+    "/api/search"
 })
 public class SearchController {
 
@@ -34,7 +34,14 @@ public class SearchController {
         return new Gson().toJson(completions);
     }
 
-    @RequestMapping(value = "/search", produces = "application/json; charset=utf-8")
+    /* TODO: action against query result shall be recorded via this api */
+    @RequestMapping(value = "/action", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String actionAction(HttpServletRequest req) throws Exception {
+        return "{}";
+    }
+
+    @RequestMapping(value = "/query", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String actionSearch(
             @RequestParam(value = "q", required = true) final String q,

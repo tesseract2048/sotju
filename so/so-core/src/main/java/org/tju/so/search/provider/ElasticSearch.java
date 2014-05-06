@@ -100,13 +100,13 @@ public class ElasticSearch extends ElasticClientInvoker implements
     }
 
     private SearchRequestBuilder setupRequestBuilder(Query query) {
-        if (query.getSites().size() == 0)
-            query.setSites(siteHolder.getAll());
-        if (query.getSchemas().size() == 0)
-            query.setSchemas(schemaHolder.getAll());
-        SearchRequestBuilder requestBuilder = client.prepareSearch(ObjectHelper
-                .extractIds(query.getSites()));
-        requestBuilder.setTypes(ObjectHelper.extractIds(query.getSchemas()));
+        if (query.getSiteIds().length == 0)
+            query.setSiteIds(ObjectHelper.extractIds(siteHolder.getAll()));
+        if (query.getSchemaIds().length == 0)
+            query.setSchemaIds(ObjectHelper.extractIds(schemaHolder.getAll()));
+        SearchRequestBuilder requestBuilder = client.prepareSearch(query
+                .getSiteIds());
+        requestBuilder.setTypes(query.getSchemaIds());
         requestBuilder.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
         requestBuilder.setQuery(SearchUtil.buildQuery(query.getQuery()));
         requestBuilder.setFrom(query.getStart());
@@ -137,7 +137,8 @@ public class ElasticSearch extends ElasticClientInvoker implements
         SearchRequestBuilder request = setupRequestBuilder(query);
         SearchResponse response = request.execute().actionGet();
         List<ResultItem> result = buildResult(response);
-        return new Context(query, result, response.getTookInMillis());
+        return new Context(query, result, response.getHits().totalHits(),
+                response.getTookInMillis());
     }
 
     private boolean indexCompletion(BulkRequestBuilder bulkRequest,
@@ -260,7 +261,7 @@ public class ElasticSearch extends ElasticClientInvoker implements
     @SuppressWarnings("unchecked")
     @Override
     public List<String> getCompletions(String keyword, int limit) {
-        LOG.info("Complete request: " + keyword);
+        LOG.info("Completion request: " + keyword);
         List<String> completions = new ArrayList<String>();
         SuggestResponse response = client
                 .prepareSuggest(SYSTEM_SITE)

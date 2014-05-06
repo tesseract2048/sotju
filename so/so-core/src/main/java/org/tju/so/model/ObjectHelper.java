@@ -8,17 +8,26 @@ import java.util.List;
  */
 public class ObjectHelper {
 
-    public static String[] extractIds(Object... objects) {
+    public static List<String> extractIdsAsList(Object... objects) {
         List<String> ids = new ArrayList<String>();
         for (Object object: objects) {
             ids.add(((IdBasedObject) object).getId());
         }
-        return ids.toArray(new String[0]);
+        return ids;
+    }
+
+    public static String[] extractIds(Object... objects) {
+        return extractIdsAsList(objects).toArray(new String[0]);
     }
 
     @SuppressWarnings("rawtypes")
     public static String[] extractIds(List objects) {
-        return extractIds(objects.toArray());
+        return extractIdsAsList(objects.toArray()).toArray(new String[0]);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static List<String> extractIdsAsList(List objects) {
+        return extractIdsAsList(objects.toArray());
     }
 
 }
