@@ -118,13 +118,23 @@ public class Storage {
                 String document = jedis.lpop(queueKey);
                 if (document == null || document.equals("nil"))
                     return null;
-                Task task = new Gson().fromJson(document, Task.class);
-                jedis.zincrby(contextReferenceKey, -1, task.getContextId());
-                return task;
+                return new Gson().fromJson(document, Task.class);
             }
 
         });
 
+    }
+
+    public void finishTask(final Task task) throws Exception {
+        jedisService.commit(new JedisTransaction<Double>() {
+
+            @Override
+            public Double execute(Jedis jedis) throws Exception {
+                return jedis.zincrby(contextReferenceKey, -1,
+                        task.getContextId());
+            }
+
+        });
     }
 
     public void pushTask(final Task task) throws Exception {

@@ -53,7 +53,7 @@ public class SearchController {
         Query query = new Query(q);
         query.setStart(start);
         query.setLimit(limit);
-        if (sites != null)
+        if (schemas != null)
             query.setSchemaIds(schemas.split(","));
         if (sites != null)
             query.setSiteIds(sites.split(","));

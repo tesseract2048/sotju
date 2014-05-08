@@ -73,10 +73,13 @@ public class Worker {
 
         if (task != null) {
             LOG.info("Task poped: " + task.toString());
+            /* FIXME: context remains when worker crashed during task execution */
             try {
                 runTask(task);
             } catch (Exception e) {
                 LOG.warn("Error occured during task execution", e);
+            } finally {
+                storage.finishTask(task);
             }
             return true;
         } else {

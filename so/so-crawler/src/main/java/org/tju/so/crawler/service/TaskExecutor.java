@@ -441,7 +441,7 @@ public class TaskExecutor {
             /* save contexts */
             if (!isDryRun) {
                 LOG.info("Saving " + relatedContexts.size()
-                        + " related contexts...");
+                        + " related context(s)...");
                 for (Context rContext: relatedContexts) {
                     LOG.debug("Post-processing context "
                             + rContext.getContextId() + "...");
