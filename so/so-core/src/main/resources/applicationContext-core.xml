@@ -12,9 +12,25 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <context:component-scan base-package="org.tju.so.search" />
     <context:component-scan base-package="org.tju.so.model" />
     <context:component-scan base-package="org.tju.so.node" />
+    <context:component-scan base-package="org.tju.so.service" />
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxIdle" value="10" />
+        <property name="maxTotal" value="300" />
+    </bean>
+
+    <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+        <constructor-arg index="0" ref="jedisPoolConfig" />
+        <constructor-arg index="1" value="${redis.host}" />
+        <constructor-arg index="2" value="6379" />
+    </bean>
 
     <bean id="clusterName" class="java.lang.String">
         <constructor-arg value="${cluster.name}" />
+    </bean>
+
+    <bean id="notificationChannel" class="java.lang.String">
+        <constructor-arg value="${redis.notification.channel}" />
     </bean>
 
     <bean id="clusterMasterHost" class="java.lang.String">

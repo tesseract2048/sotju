@@ -47,10 +47,16 @@ public class SearchController {
             @RequestParam(value = "q", required = true) final String q,
             @RequestParam(value = "start", required = false, defaultValue = "0") final int start,
             @RequestParam(value = "limit", required = false, defaultValue = "15") final int limit,
+            @RequestParam(value = "schemas", required = false) final String schemas,
+            @RequestParam(value = "sites", required = false) final String sites,
             HttpServletRequest req) throws Exception {
         Query query = new Query(q);
         query.setStart(start);
         query.setLimit(limit);
+        if (sites != null)
+            query.setSchemaIds(schemas.split(","));
+        if (sites != null)
+            query.setSiteIds(sites.split(","));
         Context context = searchProvider.search(query);
         return new Gson().toJson(context);
     }

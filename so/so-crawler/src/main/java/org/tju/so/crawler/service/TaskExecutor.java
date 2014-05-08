@@ -224,7 +224,6 @@ public class TaskExecutor {
         } else {
             searchProvider.index(entity);
         }
-        context.setFinished(true);
     }
 
     private static String formatDate(String formatString, String input) {
@@ -343,9 +342,6 @@ public class TaskExecutor {
                         op1 = "" + ret;
                     ret = op1.trim();
                     break;
-                case FINISH:
-                    context.setFinished(true);
-                    break;
                 case HTML_TO_TEXT:
                     if (op1 == null)
                         op1 = "" + ret;
@@ -441,10 +437,6 @@ public class TaskExecutor {
                             extractor, url, groups));
                 }
             }
-        } catch (Exception e) {
-            /* mark as finished so that current context would be removed later */
-            context.setFinished(true);
-            throw e;
         } finally {
             /* save contexts */
             if (!isDryRun) {
@@ -461,20 +453,8 @@ public class TaskExecutor {
                         finishContext(rContext, true);
                     }
                     for (Task newTask: rContext.getNewTasks()) {
-                        if (scheduler.scheduleNewTask(newTask)) {
-                            rContext.setScheduled(true);
-                        }
+                        scheduler.scheduleNewTask(newTask);
                     }
-                    /*
-                     * new context was created but no task has been scheduled,
-                     * in this case we are removing it
-                     */
-                    if (rContext != context && !rContext.isScheduled()) {
-                        LOG.debug("Context " + rContext.getContextId() + " is died.");
-                        rContext.setFinished(true);
-                    }
-                    if (rContext.isFinished())
-                        storage.removeContext(rContext.getContextId());
                 }
             }
         }

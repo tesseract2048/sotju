@@ -13,4 +13,5 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
     <context:component-scan base-package="org.tju.so.model" />
     <context:component-scan base-package="org.tju.so.controller" />
+    <context:component-scan base-package="org.tju.so.service" />
 </beans>

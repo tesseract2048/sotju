@@ -14,23 +14,16 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <context:component-scan base-package="org.tju.so.crawler" />
     <context:component-scan base-package="org.tju.so.model.crawler" />
 
-    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxIdle" value="10" />
-        <property name="maxTotal" value="300" />
-    </bean>
-
-    <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
-        <constructor-arg index="0" ref="jedisPoolConfig" />
-        <constructor-arg index="1" value="${redis.host}" />
-        <constructor-arg index="2" value="6379" />
-    </bean>
-
     <bean id="queueKeyFormat" class="java.lang.String">
         <constructor-arg value="${redis.queue.key.format}" />
     </bean>
  
     <bean id="contextKey" class="java.lang.String">
         <constructor-arg value="${redis.context.key}" />
+    </bean>
+ 
+    <bean id="contextReferenceKey" class="java.lang.String">
+        <constructor-arg value="${redis.context.reference.key}" />
     </bean>
  
     <bean id="refreshKey" class="java.lang.String">

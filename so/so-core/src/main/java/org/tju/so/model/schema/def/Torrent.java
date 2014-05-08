@@ -33,7 +33,7 @@ public class Torrent extends Schema {
             new Field("url", FieldType.STRING, false, false)
         }));
         setRankFactor(1.0f);
-        setDocumentRankExpr("Math.sqrt(Math.log(parseInt(doc.download) + parseInt(doc.seeder)*1.8 + parseInt(doc.leecher)*1.4 + 1))");
+        setDocumentRankExpr("Math.sqrt(Math.log(parseInt(doc.download)*1.5 + parseInt(doc.seeder)*2.4 + parseInt(doc.leecher)*1.8 + 1))");
     }
 
 }

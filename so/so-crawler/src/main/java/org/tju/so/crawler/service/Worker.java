@@ -53,6 +53,7 @@ public class Worker {
 
     public void reload() {
         init();
+        taskExecutor.reload();
     }
 
     private void runTask(Task task) throws Exception {

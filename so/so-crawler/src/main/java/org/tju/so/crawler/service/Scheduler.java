@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tju.so.model.crawler.TaskPriority;
 import org.tju.so.model.crawler.data.Context;
 import org.tju.so.model.crawler.data.Task;
 import org.tju.so.model.crawler.holder.RuleHolder;
@@ -55,6 +56,14 @@ public class Scheduler {
         LOG.info("Scheduled: " + task.getUrl());
         storage.pushTask(task);
         return true;
+    }
+
+    public boolean scheduleNewTask(String url, Map<String, Object> params,
+            TaskPriority priority) throws Exception {
+        Context context = new Context();
+        storage.putContext(context);
+        return scheduleNewTask(new Task(context.getContextId(), url, params,
+                priority));
     }
 
     public Rule getRule(String url) {
@@ -103,11 +112,9 @@ public class Scheduler {
                 if (currentTime - lastRefresh < seed.getFrequency())
                     continue;
                 LOG.info(seed.getUrl() + " is scheduled for crawling.");
-                Context context = new Context();
-                storage.putContext(context);
-                scheduleNewTask(new Task(context.getContextId(), seed.getUrl(),
-                        seed.getParams(), seed.getPriority()));
-                scheduled++;
+                if (scheduleNewTask(seed.getUrl(), seed.getParams(),
+                        seed.getPriority()))
+                    scheduled++;
             }
         }
         return scheduled;
@@ -120,6 +127,9 @@ public class Scheduler {
     public void run() throws Exception {
         isRunning = true;
         while (isRunning) {
+            int removed = storage.contextGC();
+            LOG.info("Removed " + removed
+                    + " context(s) during garbage collection.");
             int scheduled = schedule();
             LOG.info(scheduled + " task(s) scheduled.");
             Thread.sleep(30000);

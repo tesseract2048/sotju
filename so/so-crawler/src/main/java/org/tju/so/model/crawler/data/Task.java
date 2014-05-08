@@ -77,6 +77,7 @@ public class Task {
      *            the params to set
      */
     public void setParams(Map<String, Object> params) {
+        if (params == null) return;
         this.params = params;
     }
 

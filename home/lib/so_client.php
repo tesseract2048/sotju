@@ -1,5 +1,5 @@
 <?php
-define('SO_API', 'http://127.0.0.1:7676/api');
+define('SO_API', 'http://219.243.47.169:7676/api');
 
 class SoClient {
     

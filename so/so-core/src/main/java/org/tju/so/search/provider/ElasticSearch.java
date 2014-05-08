@@ -40,6 +40,7 @@ import org.tju.so.search.context.Context;
 import org.tju.so.search.context.Query;
 import org.tju.so.search.context.QueryFilter;
 import org.tju.so.search.context.ResultItem;
+import org.tju.so.util.CompletionUtil;
 import org.tju.so.util.Pair;
 import org.tju.so.util.SearchUtil;
 
@@ -143,7 +144,7 @@ public class ElasticSearch extends ElasticClientInvoker implements
 
     private boolean indexCompletion(BulkRequestBuilder bulkRequest,
             Entity entity) {
-        List<Pair<String, String>> completions = SearchUtil
+        List<Pair<String, String>> completions = CompletionUtil
                 .makeCompletions(entity);
         LOG.debug("Completions: " + completions);
         for (int i = 0; i < completions.size(); i++) {

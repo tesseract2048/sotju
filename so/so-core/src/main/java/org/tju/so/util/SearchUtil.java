@@ -1,7 +1,6 @@
 package org.tju.so.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.tju.so.model.entity.Entity;
 import org.tju.so.model.schema.Field;
-import org.tju.so.model.schema.FieldType;
 import org.tju.so.model.schema.Schema;
 import org.tju.so.search.context.ResultItem;
 
@@ -27,40 +25,6 @@ public class SearchUtil {
     public static final String BOOST_FIELD = "docBoost";
 
     public static final float BOOST_MIN = 0.01f;
-
-    @SuppressWarnings("unchecked")
-    private static List<Pair<String, String>> makeCompletions(
-            List<Field> fields, Map<String, Object> values) {
-        List<Pair<String, String>> completions = new ArrayList<Pair<String, String>>();
-        for (Field field: fields) {
-            Object value = values.get(field.getName());
-            if (value == null)
-                continue;
-            if (field.getType() == FieldType.OBJECT) {
-                completions.addAll(makeCompletions(field.getChildFields(),
-                        (Map<String, Object>) value));
-            } else if (field.getType() == FieldType.ARRAY) {
-                List<Map<String, Object>> items = (List<Map<String, Object>>) value;
-                for (Map<String, Object> item: items) {
-                    completions.addAll(makeCompletions(field.getChildFields(),
-                            item));
-                }
-            } else if (field.isKeyword()) {
-                String text = value.toString();
-                completions.add(new Pair<String, String>(text, text));
-                if (LanguageUtil.hasUnicode(text)) {
-                    completions.add(new Pair<String, String>(LanguageUtil
-                            .chinese2Pinyin(text), text));
-                }
-            }
-        }
-        return completions;
-    }
-
-    public static List<Pair<String, String>> makeCompletions(Entity entity) {
-        return makeCompletions(entity.getSchema().getFields(),
-                entity.getFieldValues());
-    }
 
     private static void buildFieldProperties(XContentBuilder mapping,
             List<Field> fields) throws IOException {

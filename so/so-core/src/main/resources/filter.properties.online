@@ -1,3 +1,5 @@
+redis.host = 127.0.0.1
+redis.notification.channel = sotju_notification
 cluster.name = sotju
 cluster.master.host = localhost
 cluster.master.port = 9300
