@@ -53,6 +53,7 @@ public class Worker {
 
     public void reload() {
         init();
+        scheduler.reload();
         taskExecutor.reload();
     }
 

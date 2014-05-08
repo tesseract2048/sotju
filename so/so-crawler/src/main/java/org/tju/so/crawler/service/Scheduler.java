@@ -90,12 +90,14 @@ public class Scheduler {
         LOG.info("Initializing crawler scheduler...");
         siteConfigs = siteConfigHolder.getAll();
         LOG.info(siteConfigs.size() + " site config(s) loaded.");
-        rules = new HashMap<String, Rule>();
+        /* for hot reload */
+        Map<String, Rule> _rules = new HashMap<String, Rule>();
         for (Rule rule: ruleHolder.getAll()) {
             String pattern = rule.getUrlPattern();
-            rules.put(pattern, rule);
+            _rules.put(pattern, rule);
             LOG.info("Rule loaded for pattern " + pattern);
         }
+        rules = _rules;
     }
 
     public void reload() {
