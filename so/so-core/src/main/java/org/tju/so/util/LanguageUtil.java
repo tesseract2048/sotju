@@ -7,6 +7,8 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
 /**
+ * Utility for nature language processing
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class LanguageUtil {
@@ -19,6 +21,12 @@ public class LanguageUtil {
         pinyinOutputFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
     }
 
+    /**
+     * Determine whether input contains any unicode character
+     * 
+     * @param input
+     * @return
+     */
     public static boolean hasUnicode(String input) {
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
@@ -28,12 +36,25 @@ public class LanguageUtil {
         return false;
     }
 
+    /**
+     * Determine whether a character is unicode
+     * 
+     * @param c
+     * @return
+     */
     public static boolean isUnicode(char c) {
         if (c > 0xFF)
             return true;
         return false;
     }
 
+    /**
+     * Convert chinese characters to HanyuPinyin sequence. Non-chinese
+     * characters will remain its position.
+     * 
+     * @param input
+     * @return
+     */
     public static String chinese2Pinyin(String input) {
         String output = "";
         for (int i = 0; i < input.length(); i++) {

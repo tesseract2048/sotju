@@ -8,6 +8,8 @@ import org.tju.so.model.schema.Schema;
 import org.tju.so.model.site.Site;
 
 /**
+ * Indexed and stored entity, or say document
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class Entity implements IdBasedObject {

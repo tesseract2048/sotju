@@ -5,6 +5,8 @@ import java.util.List;
 import org.tju.so.model.IdBasedObject;
 
 /**
+ * Description of schema for a set of entities
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class Schema implements IdBasedObject {

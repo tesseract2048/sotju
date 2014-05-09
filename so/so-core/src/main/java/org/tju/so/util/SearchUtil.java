@@ -18,6 +18,9 @@ import org.tju.so.search.context.ResultItem;
 import com.google.gson.Gson;
 
 /**
+ * Utility for searching, including index building, query building, completion
+ * building, etc.
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class SearchUtil {
@@ -26,6 +29,13 @@ public class SearchUtil {
 
     public static final float BOOST_MIN = 0.01f;
 
+    /**
+     * Build properties entry in mapping for given fields
+     * 
+     * @param mapping
+     * @param fields
+     * @throws IOException
+     */
     private static void buildFieldProperties(XContentBuilder mapping,
             List<Field> fields) throws IOException {
         for (Field field: fields) {
@@ -33,6 +43,13 @@ public class SearchUtil {
         }
     }
 
+    /**
+     * Build properties entry in mapping for given field
+     * 
+     * @param mapping
+     * @param field
+     * @throws IOException
+     */
     private static void buildFieldProperties(XContentBuilder mapping,
             Field field) throws IOException {
         mapping.startObject(field.getName());
@@ -76,6 +93,12 @@ public class SearchUtil {
         mapping.endObject();
     }
 
+    /**
+     * Build mapping for given schema
+     * 
+     * @param schema
+     * @throws IOException
+     */
     public static XContentBuilder buildSchemaMapping(Schema schema)
             throws IOException {
         XContentBuilder mapping = XContentFactory.jsonBuilder().startObject()
@@ -94,6 +117,13 @@ public class SearchUtil {
         return mapping;
     }
 
+    /**
+     * Calculate document boost for given entity. Boost directly influence
+     * document ranking during term query.
+     * 
+     * @param entity
+     * @return
+     */
     public static double calcuateBoost(Entity entity) {
         Schema schema = entity.getSchema();
         String expr = schema.getDocumentRankExpr();
@@ -111,6 +141,12 @@ public class SearchUtil {
         return boost;
     }
 
+    /**
+     * Build query for specified keyword
+     * 
+     * @param query
+     * @return
+     */
     public static QueryBuilder buildQuery(String query) {
         /*
          * FIXME: actually elasticsearch provided this ScoreFunctionBuilder
@@ -122,6 +158,12 @@ public class SearchUtil {
                         + SearchUtil.BOOST_FIELD + "'].value"));
     }
 
+    /**
+     * Wrap entity for indexing
+     * 
+     * @param entity
+     * @return
+     */
     public static String wrapEntity(Entity entity) {
         double boost = calcuateBoost(entity);
         entity.getFieldValues().put(SearchUtil.BOOST_FIELD, boost);
@@ -133,6 +175,13 @@ public class SearchUtil {
         }
     }
 
+    /**
+     * Unwrap entity for searching
+     * 
+     * @param source
+     * @param resultItem
+     * @return
+     */
     public static Map<String, Object> unwrapEntity(Map<String, Object> source,
             ResultItem resultItem) {
         resultItem.setDocBoost((double) source.get(SearchUtil.BOOST_FIELD));

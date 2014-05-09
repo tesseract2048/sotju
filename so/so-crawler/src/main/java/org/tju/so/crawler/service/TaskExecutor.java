@@ -88,6 +88,13 @@ public class TaskExecutor {
         siteHolder.flush();
     }
 
+    /**
+     * Get fetcher for specified url and initialize it with given params
+     * 
+     * @param url
+     * @param params
+     * @return
+     */
     private Fetcher getFetcher(String url, Map<String, Object> params) {
         Fetcher fetcher = new HttpFetcher();
         if (params.containsKey("method") && params.containsKey("postDataType")
@@ -107,6 +114,13 @@ public class TaskExecutor {
         return fetcher;
     }
 
+    /**
+     * Get parser for specified mime type and initialize it with given data
+     * 
+     * @param mimeType
+     * @param data
+     * @return
+     */
     private Parser getParser(String mimeType, byte[] data) {
         Parser parser = null;
         String pureMimeType = mimeType;
@@ -131,6 +145,18 @@ public class TaskExecutor {
         return parser;
     }
 
+    /**
+     * Format given args with specified variables
+     * 
+     * @param args
+     * @param rule
+     * @param context
+     * @param baseUrl
+     * @param groupName
+     * @param value
+     * @param ret
+     * @return
+     */
     private String formatArgs(String args, Rule rule, Context context,
             String baseUrl, String groupName, Object value, Object ret) {
         Map<String, Object> vars = getVars(rule, context, baseUrl, groupName,
@@ -141,6 +167,18 @@ public class TaskExecutor {
         return args;
     }
 
+    /**
+     * Execute script with given variables
+     * 
+     * @param rule
+     * @param context
+     * @param baseUrl
+     * @param groupName
+     * @param value
+     * @param ret
+     * @param script
+     * @return
+     */
     private Object execScript(Rule rule, Context context, String baseUrl,
             String groupName, Object value, Object ret, String script) {
         String eval = "";
@@ -154,6 +192,17 @@ public class TaskExecutor {
         return ScriptUtil.eval(eval);
     }
 
+    /**
+     * Export variables in given context
+     * 
+     * @param rule
+     * @param context
+     * @param baseUrl
+     * @param groupName
+     * @param value
+     * @param ret
+     * @return
+     */
     private Map<String, Object> getVars(Rule rule, Context context,
             String baseUrl, String groupName, Object value, Object ret) {
         Map<String, Object> vars = new HashMap<String, Object>();
@@ -184,6 +233,13 @@ public class TaskExecutor {
         return vars;
     }
 
+    /**
+     * Wrap context to entity
+     * 
+     * @param context
+     * @return
+     * @throws Exception
+     */
     private Entity makeEntity(Context context) throws Exception {
         Entity entity = new Entity();
         entity.setSite(siteHolder.get(context.getSiteId()));
@@ -214,6 +270,14 @@ public class TaskExecutor {
         return entity;
     }
 
+    /**
+     * Post-process context. If isDeleteing=true, remove it from built index,
+     * otherwise store and build index for it.
+     * 
+     * @param context
+     * @param isDeleteing
+     * @throws Exception
+     */
     private void finishContext(Context context, boolean isDeleteing)
             throws Exception {
         LOG.info("Finishing context " + context.getContextId() + ", deleteing="

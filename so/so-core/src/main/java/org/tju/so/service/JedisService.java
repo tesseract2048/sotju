@@ -8,6 +8,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 /**
+ * Service to provide jedis transactions
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 @Service
@@ -20,10 +22,27 @@ public class JedisService {
     @Resource
     private JedisPool jedisPool;
 
+    /**
+     * Commit a jedis transaction after which the client resource could be
+     * reused
+     * 
+     * @param transaction
+     * @return
+     * @throws Exception
+     */
     public <T> T commit(JedisTransaction<T> transaction) throws Exception {
         return commit(transaction, true);
     }
 
+    /**
+     * Commit a jedis transaction while indicates whether the client resource
+     * could be reused
+     * 
+     * @param transaction
+     * @param returnClient
+     * @return
+     * @throws Exception
+     */
     public <T> T commit(JedisTransaction<T> transaction, boolean returnClient)
             throws Exception {
         Jedis jedis = null;

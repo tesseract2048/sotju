@@ -6,6 +6,8 @@ import org.elasticsearch.client.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * Abstract class for elasticsearch client users
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public abstract class ElasticClientInvoker {

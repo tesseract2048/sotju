@@ -3,6 +3,8 @@ package org.tju.so.model.site;
 import org.tju.so.model.IdBasedObject;
 
 /**
+ * Description of site which entities are gathered from
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class Site implements IdBasedObject {

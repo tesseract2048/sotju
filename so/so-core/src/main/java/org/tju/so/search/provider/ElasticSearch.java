@@ -45,6 +45,8 @@ import org.tju.so.util.Pair;
 import org.tju.so.util.SearchUtil;
 
 /**
+ * Elasticsearch wrapper
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 @Service

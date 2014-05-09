@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Description of a query, including keyword and filter, etc.
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class Query {

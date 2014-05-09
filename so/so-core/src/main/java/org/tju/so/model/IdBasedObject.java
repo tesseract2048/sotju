@@ -5,6 +5,11 @@ package org.tju.so.model;
  */
 public interface IdBasedObject {
 
+    /**
+     * Get identity associated with this object, i.e. Schema
+     * 
+     * @return i.e. "eweb"
+     */
     String getId();
 
 }

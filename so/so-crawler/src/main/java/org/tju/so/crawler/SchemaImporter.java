@@ -1,5 +1,7 @@
 package org.tju.so.crawler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -17,10 +19,15 @@ import org.tju.so.model.site.def.Tjunews;
 import org.tju.so.search.provider.SearchProvider;
 
 /**
+ * Import all sites and schemas to cluster
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 @Component
 public class SchemaImporter {
+
+    private static final Logger LOG = LoggerFactory
+            .getLogger(SchemaImporter.class);
 
     @Autowired
     private SearchProvider search;
@@ -54,6 +61,8 @@ public class SchemaImporter {
         search.updateSchema(new Site[] {
             new Seeworld()
         }, new Movie());
+
+        LOG.info("Done. You may want to notify cluster to reload for changes to take effect immediately.");
     }
 
     public static void main(String[] args) {

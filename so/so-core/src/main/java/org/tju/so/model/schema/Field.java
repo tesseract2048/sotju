@@ -3,6 +3,8 @@ package org.tju.so.model.schema;
 import java.util.List;
 
 /**
+ * Description for particular field in particular schema
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class Field {

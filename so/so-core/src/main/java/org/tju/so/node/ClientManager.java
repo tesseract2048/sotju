@@ -10,6 +10,8 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.springframework.stereotype.Service;
 
 /**
+ * Manager for elasticsearch transport clients
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 @Service
@@ -26,6 +28,11 @@ public class ClientManager {
 
     private Client client = null;
 
+    /**
+     * Get a elasticsearch client instance (singleton)
+     * 
+     * @return
+     */
     public Client getClient() {
         if (client == null) {
             synchronized (this) {

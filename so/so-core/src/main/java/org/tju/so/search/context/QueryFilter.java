@@ -1,6 +1,8 @@
 package org.tju.so.search.context;
 
 /**
+ * Description of filter in a particular query
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public abstract class QueryFilter {
@@ -69,7 +71,8 @@ public abstract class QueryFilter {
         this.value = value;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

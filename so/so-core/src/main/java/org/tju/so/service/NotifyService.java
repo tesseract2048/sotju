@@ -21,6 +21,8 @@ import redis.clients.jedis.JedisPubSub;
 import com.google.gson.Gson;
 
 /**
+ * Service to receive, process or create cluster notification via redis
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 @Service
@@ -49,6 +51,14 @@ public class NotifyService {
         isListening = false;
     }
 
+    /**
+     * Create cluster notification and send it
+     * 
+     * @param receiver
+     * @param topic
+     * @param argument
+     * @throws Exception
+     */
     public void createNotification(Receiver receiver, Topic topic,
             Object argument) throws Exception {
         Notification notification = new Notification(receiver, topic, argument);
@@ -64,6 +74,12 @@ public class NotifyService {
         LOG.info("Notified " + notified + " peer(s).");
     }
 
+    /**
+     * Setup listening for cluster notifications. When notification arrived, all
+     * listeners will be invoked in another thread immediately.
+     * 
+     * @throws Exception
+     */
     public synchronized void setupListening() throws Exception {
         if (isListening)
             return;
@@ -130,6 +146,12 @@ public class NotifyService {
         LOG.info("Listening on channel " + notificationChannel + ".");
     }
 
+    /**
+     * Attach cluster notification listeners
+     * 
+     * @param listener
+     * @throws Exception
+     */
     public void addNotificationListener(NotificationListener listener)
             throws Exception {
         if (!isListening) {

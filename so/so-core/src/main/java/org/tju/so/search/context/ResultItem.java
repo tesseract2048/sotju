@@ -3,6 +3,8 @@ package org.tju.so.search.context;
 import org.tju.so.model.entity.Entity;
 
 /**
+ * Description of one of results in particular query
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class ResultItem {

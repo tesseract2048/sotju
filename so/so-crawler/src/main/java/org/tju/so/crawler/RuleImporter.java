@@ -1,5 +1,7 @@
 package org.tju.so.crawler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -22,10 +24,15 @@ import org.tju.so.model.crawler.rule.def.TjunewsInfoListRule;
 import org.tju.so.model.crawler.rule.def.TjunewsSiteConfig;
 
 /**
+ * Import all siteConfigs and rules to cluster
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 @Component
 public class RuleImporter {
+
+    private static final Logger LOG = LoggerFactory
+            .getLogger(RuleImporter.class);
 
     @Autowired
     private SiteConfigHolder siteConfigHolder;
@@ -51,6 +58,8 @@ public class RuleImporter {
         ruleHolder.put(new TjunewsInfoDetailRule());
         ruleHolder.put(new TjunewsInfoClickRule());
         ruleHolder.put(new SeeworldMoviePageRule());
+
+        LOG.info("Done. You may want to notify cluster to reload for changes to take effect immediately.");
     }
 
     public static void main(String[] args) {

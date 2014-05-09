@@ -42,6 +42,14 @@ public class Scheduler {
 
     private Map<String, Rule> rules;
 
+    /**
+     * Determine whether specified task can be scheduled. If so, schedule it and
+     * return true, otherwise return false.
+     * 
+     * @param task
+     * @return
+     * @throws Exception
+     */
     public boolean scheduleNewTask(Task task) throws Exception {
         String url = task.getUrl();
         Rule rule = getRule(url);
@@ -58,6 +66,14 @@ public class Scheduler {
         return true;
     }
 
+    /**
+     * Determine whether specified task can be scheduled. If so, schedule it and
+     * return true, otherwise return false.
+     * 
+     * @param task
+     * @return
+     * @throws Exception
+     */
     public boolean scheduleNewTask(String url, Map<String, Object> params,
             TaskPriority priority) throws Exception {
         Context context = new Context();
@@ -66,6 +82,13 @@ public class Scheduler {
                 priority));
     }
 
+    /**
+     * Get rule with pattern matching specified url. If such rule is not found,
+     * return null.
+     * 
+     * @param url
+     * @return
+     */
     public Rule getRule(String url) {
         for (Map.Entry<String, Rule> entry: rules.entrySet()) {
             if (url.matches(entry.getKey()))
@@ -74,6 +97,15 @@ public class Scheduler {
         return null;
     }
 
+    /**
+     * Determine whether url is expired due to given refresh rate. If so, update
+     * last refresh time for specified url.
+     * 
+     * @param url
+     * @param refreshRate
+     * @return
+     * @throws Exception
+     */
     private boolean checkRefresh(String url, int refreshRate) throws Exception {
         long lastRefreshTime = storage.getRefresh(url);
         long currentTime = storage.currentTime();
@@ -100,11 +132,20 @@ public class Scheduler {
         rules = _rules;
     }
 
+    /**
+     * Reload cached site configs and rules
+     */
     public void reload() {
         siteConfigHolder.flush();
         init();
     }
 
+    /**
+     * Walk through site configs and schedule its seeds if possible
+     * 
+     * @return
+     * @throws Exception
+     */
     public int schedule() throws Exception {
         int scheduled = 0;
         for (SiteConfig siteConfig: siteConfigs) {

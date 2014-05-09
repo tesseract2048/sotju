@@ -1,6 +1,8 @@
 package org.tju.so.util;
 
 /**
+ * Description of a key-value pair
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class Pair<K, V> {

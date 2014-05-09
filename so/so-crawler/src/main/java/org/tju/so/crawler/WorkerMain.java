@@ -12,6 +12,8 @@ import org.tju.so.service.NotifyService;
 import org.tju.so.service.NotifyService.NotificationListener;
 
 /**
+ * Bootstrap for crawler worker
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 @Component

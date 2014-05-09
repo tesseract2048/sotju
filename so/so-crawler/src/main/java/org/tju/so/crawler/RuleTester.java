@@ -3,6 +3,8 @@ package org.tju.so.crawler;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -15,10 +17,14 @@ import org.tju.so.model.crawler.holder.RuleHolder;
 import org.tju.so.model.crawler.rule.Rule;
 
 /**
+ * Test specified rule with specified url and its parameter
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 @Component
 public class RuleTester {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RuleTester.class);
 
     @Autowired
     private TaskExecutor taskExecutor;
@@ -55,12 +61,15 @@ public class RuleTester {
         ((ClassPathXmlApplicationContext) appContext).registerShutdownHook();
         RuleTester importer = appContext.getBean(RuleTester.class);
 
+        if (args.length < 2) {
+            LOG.error("Usage: RuleTester <ruleName> <url> [postData]");
+            LOG.error("RuleName could be either className or identity in holder.");
+        }
         String ruleName = args[0];
         String url = args[1];
-        String postData = args[2];
-        ruleName = "PtTorrentDownloadRule";
-        url = "http://pt.tju.edu.cn/download.php?id=104368";
-        postData = null;
+        String postData = null;
+        if (args.length > 2)
+            postData = args[2];
         importer.run(importer.getRule(ruleName), url, postData);
     }
 }

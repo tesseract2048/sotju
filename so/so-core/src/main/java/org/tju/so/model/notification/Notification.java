@@ -1,6 +1,8 @@
 package org.tju.so.model.notification;
 
 /**
+ * Description for cluster notification received, processed or sent
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class Notification {

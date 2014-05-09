@@ -3,6 +3,9 @@ package org.tju.so.search.context;
 import java.util.List;
 
 /**
+ * Description of search context, including its query, result and other
+ * important attributes
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class Context {

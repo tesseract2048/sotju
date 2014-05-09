@@ -11,6 +11,8 @@ import org.tju.so.model.schema.Field;
 import org.tju.so.model.schema.FieldType;
 
 /**
+ * Utility for auto completion during search
+ * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
 public class CompletionUtil {
@@ -18,6 +20,12 @@ public class CompletionUtil {
     private final static Pattern TEXT_EXTRACTION = Pattern
             .compile("\\[([^\\]]+)\\]");
 
+    /**
+     * Make completions for a single corpus of words
+     * 
+     * @param text
+     * @return
+     */
     private static List<Pair<String, String>> makeCompletions(String text) {
         int found = 0;
         List<Pair<String, String>> completions = new ArrayList<Pair<String, String>>();
@@ -36,6 +44,13 @@ public class CompletionUtil {
         return completions;
     }
 
+    /**
+     * Make completions for specified fields and its values
+     * 
+     * @param fields
+     * @param values
+     * @return
+     */
     @SuppressWarnings("unchecked")
     private static List<Pair<String, String>> makeCompletions(
             List<Field> fields, Map<String, Object> values) {
@@ -61,6 +76,12 @@ public class CompletionUtil {
         return completions;
     }
 
+    /**
+     * Make completion for specified entity
+     * 
+     * @param entity
+     * @return
+     */
     public static List<Pair<String, String>> makeCompletions(Entity entity) {
         return makeCompletions(entity.getSchema().getFields(),
                 entity.getFieldValues());
