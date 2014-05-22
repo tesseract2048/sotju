@@ -1,5 +1,6 @@
 package org.tju.so.search.context;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,9 @@ import java.util.List;
  * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
-public class Query {
+public class Query implements Serializable {
+
+    private static final long serialVersionUID = -211973037351384646L;
 
     private String query;
 

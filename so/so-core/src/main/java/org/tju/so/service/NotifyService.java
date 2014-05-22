@@ -104,7 +104,7 @@ public class NotifyService {
                                     Notification notification = new Gson()
                                             .fromJson(message,
                                                     Notification.class);
-                                    LOG.info("Notification received: "
+                                    LOG.debug("Notification received: "
                                             + notification);
                                     for (NotificationListener listener: listeners) {
                                         listener.onNotification(notification);

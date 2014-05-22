@@ -1,5 +1,6 @@
 redis.host = 127.0.0.1
 redis.notification.channel = sotju_notification
-cluster.name = sotju_debug
-cluster.master.host = localhost
+redis.log.key = sotju_log
+cluster.name = sotju
+cluster.master.host = 219.243.47.169
 cluster.master.port = 9300

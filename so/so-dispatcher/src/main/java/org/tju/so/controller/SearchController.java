@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.tju.so.search.context.Context;
 import org.tju.so.search.context.Query;
 import org.tju.so.search.provider.SearchProvider;
+import org.tju.so.service.SearchLogService;
 
 import com.google.gson.Gson;
 
@@ -24,6 +25,9 @@ public class SearchController {
     @Autowired
     private SearchProvider searchProvider;
 
+    @Autowired
+    private SearchLogService searchLogService;
+
     @RequestMapping(value = "/complete", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String actionComplete(
@@ -31,6 +35,7 @@ public class SearchController {
             @RequestParam(value = "limit", required = false, defaultValue = "10") final int limit,
             HttpServletRequest req) throws Exception {
         List<String> completions = searchProvider.getCompletions(q, limit);
+        searchLogService.writeComplete(q, limit, completions);
         return new Gson().toJson(completions);
     }
 
@@ -58,6 +63,7 @@ public class SearchController {
         if (sites != null)
             query.setSiteIds(sites.split(","));
         Context context = searchProvider.search(query);
+        searchLogService.writeSearch(context);
         return new Gson().toJson(context);
     }
 }

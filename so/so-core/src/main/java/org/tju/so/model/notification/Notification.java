@@ -8,7 +8,7 @@ package org.tju.so.model.notification;
 public class Notification {
 
     public enum Receiver {
-        ALL, CRAWLER_SCHEDULER, CRAWLER_WORKER, DISPATCHER, SEARCH_NODE
+        ALL, CRAWLER_SCHEDULER, CRAWLER_WORKER, DISPATCHER, SEARCH_NODE, ANALYZER
     }
 
     public enum Topic {

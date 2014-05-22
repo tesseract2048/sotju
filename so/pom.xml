@@ -12,6 +12,7 @@
         <module>so-crawler</module>
         <module>so-dispatcher</module>
         <module>so-node</module>
+        <module>so-analyzer</module>
     </modules>
     <dependencies>
         <dependency>

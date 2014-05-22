@@ -33,6 +33,10 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
         <constructor-arg value="${redis.notification.channel}" />
     </bean>
 
+    <bean id="logKey" class="java.lang.String">
+        <constructor-arg value="${redis.log.key}" />
+    </bean>
+
     <bean id="clusterMasterHost" class="java.lang.String">
         <constructor-arg value="${cluster.master.host}" />
     </bean>
