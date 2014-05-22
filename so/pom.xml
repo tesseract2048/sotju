@@ -179,6 +179,11 @@
                 <artifactId>so-core</artifactId>
                 <version>${so.core.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.tju.so</groupId>
+                <artifactId>so-analyzer</artifactId>
+                <version>${so.analyzer.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <properties>
@@ -198,6 +203,7 @@
         <protobuf.version>2.4.0a</protobuf.version>
         <!-- Module version -->
         <so.core.version>1.0.0-SNAPSHOT</so.core.version>
+        <so.analyzer.version>1.0.0-SNAPSHOT</so.analyzer.version>
         <so.crawler.version>1.0.0-SNAPSHOT</so.crawler.version>
         <so.dispatcher.version>1.0.0-SNAPSHOT</so.dispatcher.version>
     </properties>

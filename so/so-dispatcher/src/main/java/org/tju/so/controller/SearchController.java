@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.tju.so.search.context.Context;
 import org.tju.so.search.context.Query;
 import org.tju.so.search.provider.SearchProvider;
+import org.tju.so.service.HotwordService;
 import org.tju.so.service.SearchLogService;
 
 import com.google.gson.Gson;
@@ -27,6 +28,18 @@ public class SearchController {
 
     @Autowired
     private SearchLogService searchLogService;
+
+    @Autowired
+    private HotwordService hotwordService;
+
+    @RequestMapping(value = "/hotword", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String actionComplete(
+            @RequestParam(value = "limit", required = false, defaultValue = "10") final int limit,
+            HttpServletRequest req) throws Exception {
+        List<String> hotwords = hotwordService.getHotwords(limit);
+        return new Gson().toJson(hotwords);
+    }
 
     @RequestMapping(value = "/complete", produces = "application/json; charset=utf-8")
     @ResponseBody

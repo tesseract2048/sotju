@@ -1,1 +1,3 @@
 binlog.file = /tmp/sotju/log.bin
+query.freq.key = sotju_query_freq_%s
+query.hotword.key = sotju_query_hotword

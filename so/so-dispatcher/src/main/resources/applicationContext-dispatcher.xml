@@ -10,6 +10,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     default-lazy-init="true">
 
     <import resource="classpath:/applicationContext-core.xml" />
+    <import resource="classpath:/applicationContext-analyzer.xml" />
 
     <context:component-scan base-package="org.tju.so.model" />
     <context:component-scan base-package="org.tju.so.controller" />

@@ -15,6 +15,14 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <context:component-scan base-package="org.tju.so.service" />
     <context:component-scan base-package="org.tju.so.handler" />
 
+    <bean id="queryFreqKey" class="java.lang.String">
+        <constructor-arg value="${query.freq.key}" />
+    </bean>
+
+    <bean id="queryHotwordKey" class="java.lang.String">
+        <constructor-arg value="${query.hotword.key}" />
+    </bean>
+
     <bean id="binlogFile" class="java.lang.String">
         <constructor-arg value="${binlog.file}" />
     </bean>
