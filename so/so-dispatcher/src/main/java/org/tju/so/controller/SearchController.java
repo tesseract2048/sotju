@@ -44,24 +44,39 @@ public class SearchController {
     @RequestMapping(value = "/complete", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String actionComplete(
+            @RequestParam(value = "u", required = true) final String u,
             @RequestParam(value = "q", required = true) final String q,
             @RequestParam(value = "limit", required = false, defaultValue = "10") final int limit,
             HttpServletRequest req) throws Exception {
         List<String> completions = searchProvider.getCompletions(q, limit);
-        searchLogService.writeComplete(q, limit, completions);
+        searchLogService.writeComplete(u, q, limit, completions);
         return new Gson().toJson(completions);
     }
 
-    /* TODO: action against query result shall be recorded via this api */
-    @RequestMapping(value = "/action", produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/click", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public String actionAction(HttpServletRequest req) throws Exception {
-        return "{}";
+    public String clickAction(
+            HttpServletRequest req,
+            @RequestParam(value = "u", required = true) final String u,
+            @RequestParam(value = "q", required = true) final String q,
+            @RequestParam(value = "start", required = false, defaultValue = "0") final int start,
+            @RequestParam(value = "limit", required = false, defaultValue = "15") final int limit,
+            @RequestParam(value = "schemaId", required = true) final String schemaId,
+            @RequestParam(value = "siteId", required = true) final String siteId,
+            @RequestParam(value = "id", required = true) final String id,
+            @RequestParam(value = "position", required = true) final int position)
+            throws Exception {
+        Query query = new Query(q);
+        query.setStart(start);
+        query.setLimit(limit);
+        searchLogService.writeClick(u, query, schemaId, siteId, id, position);
+        return "{\"success\":true}";
     }
 
     @RequestMapping(value = "/query", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String actionSearch(
+            @RequestParam(value = "u", required = true) final String u,
             @RequestParam(value = "q", required = true) final String q,
             @RequestParam(value = "start", required = false, defaultValue = "0") final int start,
             @RequestParam(value = "limit", required = false, defaultValue = "15") final int limit,
@@ -76,6 +91,7 @@ public class SearchController {
         if (sites != null)
             query.setSiteIds(sites.split(","));
         Context context = searchProvider.search(query);
+        context.setUserIdentifier(u);
         searchLogService.writeSearch(context);
         return new Gson().toJson(context);
     }

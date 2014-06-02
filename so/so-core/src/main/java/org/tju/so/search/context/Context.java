@@ -10,6 +10,8 @@ import java.util.List;
  */
 public class Context {
 
+    private String userIdentifier;
+
     private Query query;
 
     private List<ResultItem> result;
@@ -26,6 +28,21 @@ public class Context {
         this.result = result;
         this.total = total;
         this.queryTook = queryTook;
+    }
+
+    /**
+     * @return the userIdentifier
+     */
+    public String getUserIdentifier() {
+        return userIdentifier;
+    }
+
+    /**
+     * @param userIdentifier
+     *            the userIdentifier to set
+     */
+    public void setUserIdentifier(String userIdentifier) {
+        this.userIdentifier = userIdentifier;
     }
 
     /**

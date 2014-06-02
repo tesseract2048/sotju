@@ -23,6 +23,18 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
         <constructor-arg value="${query.hotword.key}" />
     </bean>
 
+    <bean id="dcmMaxPosition" class="java.lang.Integer">
+        <constructor-arg value="${dcm.max.position}" />
+    </bean>
+
+    <bean id="dcmQueryCounterKey" class="java.lang.String">
+        <constructor-arg value="${dcm.query.counter.key}" />
+    </bean>
+
+    <bean id="dcmPositionCounterKey" class="java.lang.String">
+        <constructor-arg value="${dcm.position.counter.key}" />
+    </bean>
+
     <bean id="binlogFile" class="java.lang.String">
         <constructor-arg value="${binlog.file}" />
     </bean>
@@ -31,6 +43,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
         <constructor-arg>
             <list>
                 <ref bean="binaryLogWriterHandler" />
+                <ref bean="hotwordHandler" />
             </list>
         </constructor-arg>
     </bean>

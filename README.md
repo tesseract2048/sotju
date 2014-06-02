@@ -10,7 +10,7 @@ Search engine based on Elastsearch, aiming to index and search resources within 
 * easy deployment
 * flexibility to index across multiple sites or schemas
 
-## Packages
+## Components
 
 * so: sotju projects
 * so/so-core: core package, including models, schema definations and search adapters.
@@ -18,11 +18,12 @@ Search engine based on Elastsearch, aiming to index and search resources within 
 * so/so-node: node package, a wrapper for elastsearch data node.
 * so/so-dispatcher: dispatcher package, provides a RESTful API for accessing search engine.
 * analysis-ik: a modified version of elasticsearch-analysis-ik
+* home: a demo front-end portal site
 
 ## TODOs
 
 * A human interface for searching (say homepage), and its optimization for mobile devices
-* Query log analyzers: hot query, related query, etc.
+* Query log analyzers: related query, etc.
 * More schemas: Service, Organization, Software, Music, (Page, ) etc.
 * More sites: Twt, etc.
 * A human interface for manual operations

@@ -3,6 +3,7 @@ package org.tju.so.model.entity;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.tju.so.model.DocumentIdentity;
 import org.tju.so.model.IdBasedObject;
 import org.tju.so.model.schema.Schema;
 import org.tju.so.model.site.Site;
@@ -12,17 +13,11 @@ import org.tju.so.model.site.Site;
  * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
-public class Entity implements IdBasedObject {
+public class Entity extends DocumentIdentity implements IdBasedObject {
 
     private transient Schema schema;
 
     private transient Site site;
-
-    private String schemaId;
-
-    private String siteId;
-
-    private String id;
 
     private Map<String, Object> fieldValues;
 
@@ -71,21 +66,6 @@ public class Entity implements IdBasedObject {
     }
 
     /**
-     * @return the id
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * @param id
-     *            the id to set
-     */
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    /**
      * @return the fieldValues
      */
     public Map<String, Object> getFieldValues() {
@@ -106,20 +86,6 @@ public class Entity implements IdBasedObject {
 
     public void setField(String name, Object value) {
         fieldValues.put(name, value);
-    }
-
-    /**
-     * @return the schemaId
-     */
-    public String getSchemaId() {
-        return schemaId;
-    }
-
-    /**
-     * @return the siteId
-     */
-    public String getSiteId() {
-        return siteId;
     }
 
 }

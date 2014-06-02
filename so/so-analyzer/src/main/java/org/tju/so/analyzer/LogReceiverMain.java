@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.tju.so.service.SearchLogReceiver;
 
 /**
- * Bootstrap for crawler scheduler
+ * Bootstrap for log receiver
  * 
  * @author Tianyi HE <hty0807@gmail.com>
  */

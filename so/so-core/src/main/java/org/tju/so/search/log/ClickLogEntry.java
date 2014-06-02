@@ -2,6 +2,7 @@ package org.tju.so.search.log;
 
 import java.util.Date;
 
+import org.tju.so.model.DocumentIdentity;
 import org.tju.so.search.context.Query;
 
 /**
@@ -9,15 +10,17 @@ import org.tju.so.search.context.Query;
  * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
-public class ClickLogEntry implements LogEntry {
+public class ClickLogEntry extends DocumentIdentity implements LogEntry {
 
     private static final long serialVersionUID = 1169204586890587732L;
 
     private Date date;
 
+    private String userIdentifier;
+
     private Query query;
 
-    private SearchResultItemLogEntry resultItem;
+    private int position;
 
     @Override
     public EntryType getType() {
@@ -40,6 +43,21 @@ public class ClickLogEntry implements LogEntry {
     }
 
     /**
+     * @return the userIdentifier
+     */
+    public String getUserIdentifier() {
+        return userIdentifier;
+    }
+
+    /**
+     * @param userIdentifier
+     *            the userIdentifier to set
+     */
+    public void setUserIdentifier(String userIdentifier) {
+        this.userIdentifier = userIdentifier;
+    }
+
+    /**
      * @return the query
      */
     public Query getQuery() {
@@ -55,18 +73,18 @@ public class ClickLogEntry implements LogEntry {
     }
 
     /**
-     * @return the resultItem
+     * @return the position
      */
-    public SearchResultItemLogEntry getResultItem() {
-        return resultItem;
+    public int getPosition() {
+        return position;
     }
 
     /**
-     * @param resultItem
-     *            the resultItem to set
+     * @param position
+     *            the position to set
      */
-    public void setResultItem(SearchResultItemLogEntry resultItem) {
-        this.resultItem = resultItem;
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     /*
@@ -75,8 +93,10 @@ public class ClickLogEntry implements LogEntry {
      */
     @Override
     public String toString() {
-        return "ClickLogEntry [date=" + date + ", query=" + query
-                + ", resultItem=" + resultItem + "]";
+        return "ClickLogEntry [date=" + date + ", userIdentifier="
+                + userIdentifier + ", query=" + query + ", schemaId="
+                + schemaId + ", siteId=" + siteId + ", id=" + id
+                + ", position=" + position + "]";
     }
 
 }

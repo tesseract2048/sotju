@@ -49,9 +49,10 @@ public class SearchLogService {
         });
     }
 
-    public void writeComplete(String keyword, int limit,
+    public void writeComplete(String userIdentifier, String keyword, int limit,
             List<String> completions) throws Exception {
         CompleteLogEntry completeLogEntry = new CompleteLogEntry();
+        completeLogEntry.setUserIdentifier(userIdentifier);
         completeLogEntry.setKeyword(keyword);
         completeLogEntry.setLimit(limit);
         completeLogEntry.setCompletions(completions);
@@ -59,16 +60,22 @@ public class SearchLogService {
         write(completeLogEntry);
     }
 
-    public void writeClick(Query query, ResultItem resultItem) throws Exception {
+    public void writeClick(String userIdentifier, Query query, String schemaId,
+            String siteId, String id, int position) throws Exception {
         ClickLogEntry clickLogEntry = new ClickLogEntry();
+        clickLogEntry.setUserIdentifier(userIdentifier);
         clickLogEntry.setQuery(query);
-        clickLogEntry.setResultItem(getResultItemLogEntry(resultItem));
+        clickLogEntry.setSchemaId(schemaId);
+        clickLogEntry.setSiteId(siteId);
+        clickLogEntry.setId(id);
+        clickLogEntry.setPosition(position);
         clickLogEntry.setDate(new Date());
         write(clickLogEntry);
     }
 
     public void writeSearch(Context context) throws Exception {
         SearchLogEntry searchLogEntry = new SearchLogEntry();
+        searchLogEntry.setUserIdentifier(context.getUserIdentifier());
         searchLogEntry.setQuery(context.getQuery());
         searchLogEntry.setQueryTook(context.getQueryTook());
         searchLogEntry.setTotal(context.getTotal());

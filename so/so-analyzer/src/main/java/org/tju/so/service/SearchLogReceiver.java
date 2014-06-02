@@ -45,7 +45,7 @@ public class SearchLogReceiver implements DisposableBean {
         @SuppressWarnings("unchecked")
         @Override
         public LogEntry execute(Jedis jedis) throws Exception {
-            String message = jedis.lpop(logKey);
+            String message = jedis.blpop(logKey).get(1);
             if (message == null || message.equals("nil")) {
                 return null;
             }
@@ -64,7 +64,6 @@ public class SearchLogReceiver implements DisposableBean {
             LogEntry entry = jedisService.commit(new JedisFetch());
             if (entry != null) {
                 handle(entry);
-                Thread.sleep(16);
             } else {
                 Thread.sleep(100);
             }

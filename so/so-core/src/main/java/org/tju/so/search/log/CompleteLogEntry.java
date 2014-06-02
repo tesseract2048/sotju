@@ -14,6 +14,8 @@ public class CompleteLogEntry implements LogEntry {
 
     private Date date;
 
+    private String userIdentifier;
+
     private String keyword;
 
     private int limit;
@@ -38,6 +40,21 @@ public class CompleteLogEntry implements LogEntry {
      */
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    /**
+     * @return the userIdentifier
+     */
+    public String getUserIdentifier() {
+        return userIdentifier;
+    }
+
+    /**
+     * @param userIdentifier
+     *            the userIdentifier to set
+     */
+    public void setUserIdentifier(String userIdentifier) {
+        this.userIdentifier = userIdentifier;
     }
 
     /**
