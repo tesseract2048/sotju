@@ -10,7 +10,7 @@ import org.tju.so.search.context.Query;
  * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
-public class ClickLogEntry extends DocumentIdentity implements LogEntry {
+public class ClickLogEntry extends DocumentIdentity implements LogEntry, SearchActionEntry {
 
     private static final long serialVersionUID = 1169204586890587732L;
 

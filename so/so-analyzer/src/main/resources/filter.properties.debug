@@ -1,6 +1,7 @@
-binlog.file = /tmp/sotju/log.bin
+binlog.file = /tmp/sotju/%s.binlog
 query.freq.key = sotju_query_freq_%s
 query.hotword.key = sotju_query_hotword
 dcm.query.counter.key = sotju_dcm_query_counter_%s
 dcm.position.counter.key = sotju_dcm_position_counter
 dcm.max.position = 10
+dcm.max.session.time = 3600000

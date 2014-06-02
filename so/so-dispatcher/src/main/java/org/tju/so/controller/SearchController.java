@@ -59,16 +59,18 @@ public class SearchController {
             HttpServletRequest req,
             @RequestParam(value = "u", required = true) final String u,
             @RequestParam(value = "q", required = true) final String q,
-            @RequestParam(value = "start", required = false, defaultValue = "0") final int start,
-            @RequestParam(value = "limit", required = false, defaultValue = "15") final int limit,
+            @RequestParam(value = "schemas", required = false) final String schemas,
+            @RequestParam(value = "sites", required = false) final String sites,
             @RequestParam(value = "schemaId", required = true) final String schemaId,
             @RequestParam(value = "siteId", required = true) final String siteId,
             @RequestParam(value = "id", required = true) final String id,
             @RequestParam(value = "position", required = true) final int position)
             throws Exception {
         Query query = new Query(q);
-        query.setStart(start);
-        query.setLimit(limit);
+        if (schemas != null)
+            query.setSchemaIds(schemas.split(","));
+        if (sites != null)
+            query.setSiteIds(sites.split(","));
         searchLogService.writeClick(u, query, schemaId, siteId, id, position);
         return "{\"success\":true}";
     }

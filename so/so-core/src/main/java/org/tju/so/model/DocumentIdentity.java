@@ -62,4 +62,23 @@ public abstract class DocumentIdentity {
                 + ", id=" + id + "]";
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof DocumentIdentity))
+            return false;
+        DocumentIdentity id = (DocumentIdentity) obj;
+        if (!id.getId().equals(id))
+            return false;
+        if (!id.getSiteId().equals(siteId))
+            return false;
+        if (!id.getSchemaId().equals(schemaId))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode() + siteId.hashCode() + schemaId.hashCode();
+    }
+
 }

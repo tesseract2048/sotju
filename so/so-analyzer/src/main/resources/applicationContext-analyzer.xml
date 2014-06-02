@@ -27,6 +27,10 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
         <constructor-arg value="${dcm.max.position}" />
     </bean>
 
+    <bean id="dcmMaxSessionTime" class="java.lang.Long">
+        <constructor-arg value="${dcm.max.session.time}" />
+    </bean>
+
     <bean id="dcmQueryCounterKey" class="java.lang.String">
         <constructor-arg value="${dcm.query.counter.key}" />
     </bean>

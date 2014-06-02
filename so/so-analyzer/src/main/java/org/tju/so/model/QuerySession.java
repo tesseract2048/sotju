@@ -1,6 +1,9 @@
 package org.tju.so.model;
 
+import java.util.Date;
 import java.util.List;
+
+import org.tju.so.search.log.ClickLogEntry;
 
 /**
  * @author Tianyi HE <hty0807@gmail.com>
@@ -10,6 +13,17 @@ public class QuerySession {
     public static class ClickItem extends QueryItemIdentity {
 
         private int position;
+
+        public ClickItem() {}
+
+        public ClickItem(DocumentIdentity docId) {
+            super(docId);
+        }
+
+        public ClickItem(ClickLogEntry entry) {
+            super(entry);
+            setPosition(entry.getPosition());
+        }
 
         /**
          * @return the position
@@ -28,9 +42,26 @@ public class QuerySession {
 
     }
 
+    private Date startDate;
+
     private String keyword;
 
     private List<ClickItem> clicks;
+
+    /**
+     * @return the startDate
+     */
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    /**
+     * @param startDate
+     *            the startDate to set
+     */
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
 
     /**
      * @return the keyword
@@ -68,7 +99,8 @@ public class QuerySession {
      */
     @Override
     public String toString() {
-        return "QuerySession [keyword=" + keyword + ", clicks=" + clicks + "]";
+        return "QuerySession [startDate=" + startDate + ", keyword=" + keyword
+                + ", clicks=" + clicks + "]";
     }
 
 }

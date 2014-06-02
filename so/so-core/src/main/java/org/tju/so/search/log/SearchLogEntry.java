@@ -10,7 +10,7 @@ import org.tju.so.search.context.Query;
  * 
  * @author Tianyi HE <hty0807@gmail.com>
  */
-public class SearchLogEntry implements LogEntry {
+public class SearchLogEntry implements LogEntry, SearchActionEntry {
 
     private static final long serialVersionUID = 5471754518792466967L;
 

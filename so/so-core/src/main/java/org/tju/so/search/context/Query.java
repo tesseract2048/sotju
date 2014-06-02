@@ -2,6 +2,7 @@ package org.tju.so.search.context;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -139,4 +140,29 @@ public class Query implements Serializable {
                 + start + ", limit=" + limit + "]";
     }
 
+    @Override
+    public int hashCode() {
+        int hash = query.hashCode();
+        for (String siteId: siteIds) {
+            hash += siteId.hashCode();
+        }
+        for (String schemaId: schemaIds) {
+            schemaId += schemaId.hashCode();
+        }
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Query))
+            return false;
+        Query q = (Query) obj;
+        if (!q.getQuery().equals(query))
+            return false;
+        if (!Arrays.equals(q.getSiteIds(), siteIds))
+            return false;
+        if (!Arrays.equals(q.getSchemaIds(), schemaIds))
+            return false;
+        return true;
+    }
 }
