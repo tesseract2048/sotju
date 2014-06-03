@@ -52,11 +52,13 @@ public class ResultSortingService {
 
     public void postSort(Context context) {
         Query query = context.getQuery();
-        try {
-            sortWithClickModel(query.getQuery(), query.getStart(),
-                    context.getResult());
-        } catch (Exception e) {
-            LOG.warn("Failed to sort results with click model", e);
+        if (query.getSchemaIds().length == 0 && query.getSiteIds().length == 0) {
+            try {
+                sortWithClickModel(query.getQuery(), query.getStart(),
+                        context.getResult());
+            } catch (Exception e) {
+                LOG.warn("Failed to sort results with click model", e);
+            }
         }
     }
 

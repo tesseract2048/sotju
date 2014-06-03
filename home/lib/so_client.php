@@ -8,19 +8,29 @@ class SoClient {
     public function __construct() {
     }
 
-    public function complete($q, $limit = 10) {
+    public function complete($u, $q, $limit = 10) {
+        $u = rawurlencode($u);
         $q = rawurlencode($q);
         $limit = rawurlencode($limit);
-        $body = file_get_contents($this->api_url . '/search/complete?' . 'q=' . $q . '&limit=' . $limit);
+        $body = file_get_contents($this->api_url . '/search/complete?' . 'u=' . $u . '&q=' . $q . '&limit=' . $limit);
         $response = json_decode($body, TRUE);
         return $response;
     }
 
-    public function search($q, $start = 0, $limit = 15) {
+    public function click($u, $q, $schemaId, $siteId, $id, $position) {
+        $u = rawurlencode($u);
+        $q = rawurlencode($q);
+        $body = file_get_contents($this->api_url . '/search/click?' . 'u=' . $u . '&q=' . $q . '&schemaId=' . $schemaId . '&siteId=' . $siteId . '&id=' . $id . '&position=' . $position);
+        $response = json_decode($body, TRUE);
+        return $response;
+    }
+
+    public function search($u, $q, $start = 0, $limit = 15) {
+        $u = rawurlencode($u);
         $q = rawurlencode($q);
         $start = rawurlencode($start);
         $limit = rawurlencode($limit);
-        $body = file_get_contents($this->api_url . '/search/query?' . 'q=' . $q . '&start=' . $start . '&limit=' . $limit);
+        $body = file_get_contents($this->api_url . '/search/query?' . 'u=' . $u . '&q=' . $q . '&start=' . $start . '&limit=' . $limit);
         $response = json_decode($body, TRUE);
         return $response;
     }

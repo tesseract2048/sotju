@@ -1,12 +1,16 @@
 <?php
 include_once './lib/so_client.php';
+function go_url($url, $schemaId, $siteId, $id, $position) {
+    $r = 'go.php?url=' . rawurlencode($url) . '&schemaId=' . rawurlencode($schemaId) . '&siteId=' . rawurlencode($siteId) . '&id=' . rawurlencode($id) . '&position=' . rawurlencode($position);
+    return $r;
+}
 $start = 0;
 if (isset($_GET['start'])) {
     $start = (int)$_GET['start'];
 }
 $q = $_GET['q'];
 $client = new SoClient();
-$response = $client->search($q, $start);
+$response = $client->search($_SERVER['REMOTE_ADDR'], $q, $start);
 ?>
 <p>
     Found <?php echo $response['total'];?> result(s) in <?php echo $response['queryTook'];?> ms.
@@ -16,7 +20,7 @@ $response = $client->search($q, $start);
 foreach ($response['result'] as $item) {?>
     <tr>
         <td>
-            <strong><?php echo $start+$item['position']+1;?>. <a href="<?php echo $item['entity']['fieldValues']['url'];?>" target="_blank"><?php echo $item['entity']['fieldValues']['title'];?></a></strong>
+            <strong><?php echo $start+$item['position']+1;?>. <a href="<?php echo go_url($item['entity']['fieldValues']['url'], $item['entity']['schemaId'], $item['entity']['siteId'], $item['entity']['id'], $start+$item['position']);?>" target="_blank"><?php echo $item['entity']['fieldValues']['title'];?></a></strong>
         </td>
     </tr>
     <tr>

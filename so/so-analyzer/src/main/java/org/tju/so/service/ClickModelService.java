@@ -116,6 +116,8 @@ public class ClickModelService {
 
         if (entry.getType() == EntryType.SEARCH && matchSession == null) {
             SearchLogEntry searchLogEntry = (SearchLogEntry) entry;
+            if (searchLogEntry.getQuery().getSchemaIds().length > 0) return;
+            if (searchLogEntry.getQuery().getSiteIds().length > 0) return;
             QuerySession session = new QuerySession();
             session.setStartDate(searchLogEntry.getDate());
             session.setKeyword(searchLogEntry.getQuery().getQuery());
